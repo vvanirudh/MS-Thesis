@@ -16,9 +16,13 @@
 \usepackage[left=1.5in,right=1.5in,top=1.5in,bottom=1.5in]{geometry}
 \usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{graphicx,amsmath,amssymb,multirow,booktabs,color,verbatim,draftwatermark,cite,url,placeins}
+\usepackage{algorithm, algpseudocode}
+\usepackage[font=scriptsize]{subcaption}
+\usepackage[font=scriptsize]{subfig}
 \usepackage{layouts,array,wrapfig}
 \usepackage[normalem]{ulem}
 \usepackage{tgpagella}
+\newcommand*{\QEDB}{\hfill\ensuremath{\square}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %DF: This needs to be removed to get 
@@ -40,6 +44,9 @@
 \renewcommand{\textfraction}{0.05}
 \renewcommand{\topfraction}{0.9}
 \renewcommand{\floatpagefraction}{0.8}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
 
 \newcommand{\clearemptydoublepage}{\newpage{\pagestyle{empty}\cleardoublepage}}
 
@@ -47,6 +54,9 @@
 \setcounter{tocdepth}{1}
 
 \begin{document}
+
+% Adding notations
+\input{notation.tex}
 
 \title{2 Legit 2 Quit}
 \author{JJ Gibson}
