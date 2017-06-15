@@ -1,0 +1,94 @@
+% Robotics Institute Technical Report
+%
+% Unofficial Template for RI Technical Reports
+% Use with latex2e
+%
+% Modified by: David Fouhey, Oct 2014
+% Created by: Daniel Morris, Dec 2000
+%
+% DM:
+%   Since I was unable to find a template for Technical Reports, I made up my
+%   own.  Use it at your own risk -- as I am not a latex guru.
+
+
+\documentclass[twoside,10pt]{report}
+\usepackage{marginnote}
+\usepackage[left=1.5in,right=1.5in,top=1.5in,bottom=1.5in]{geometry}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{graphicx,amsmath,amssymb,multirow,booktabs,color,verbatim,draftwatermark,cite,url,placeins}
+\usepackage{layouts,array,wrapfig}
+\usepackage[normalem]{ulem}
+\usepackage{tgpagella}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%DF: This needs to be removed to get 
+%rid of all watermarks
+\usepackage{draftwatermark}
+\SetWatermarkText{DRAFT}
+\SetWatermarkScale{0.5}
+\SetWatermarkLightness{0.90}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%DF: Nuke all the notes by using 
+%the second note definition below
+\newcommand{\note}[1]{\textcolor{red}{#1}}
+%\newcommand{\note}[1]{}
+
+
+%I usually like to put more figures on a page with text than latex's
+%default
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\floatpagefraction}{0.8}
+
+\newcommand{\clearemptydoublepage}{\newpage{\pagestyle{empty}\cleardoublepage}}
+
+%Table of contents stuff
+\setcounter{tocdepth}{1}
+
+\begin{document}
+
+\title{2 Legit 2 Quit}
+\author{JJ Gibson}
+
+
+%title page
+\input{titlepage.tex}
+\clearpage
+
+
+%start the forematter 
+\pagenumbering{Roman}
+\clearemptydoublepage
+\setcounter{page}{1}
+
+\begin{centering} \section*{Abstract} \end{centering}
+\input{abstract.tex}
+
+\tableofcontents
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Include in final thesis
+%\clearpage \listoffigures
+%\clearpage \listoftables
+%\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%start the actual document
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+
+\chapter{Introduction}
+\label{chap:introduction}
+\input{introduction.tex}
+
+\clearpage
+
+%Include references using bst and bib files.
+\bibliographystyle{finitplain} 
+{\small \bibliography{local}}
+
+
+\end{document}
