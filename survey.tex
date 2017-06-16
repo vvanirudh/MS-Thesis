@@ -1,4 +1,92 @@
-\note{Adapt the survey previously written into this chapter. Also cover some of the more recent papers published in this area.}
+\note{Adapt the survey previously written into this chapter. Also cover some of the more recent papers published in this area.} \\
+In this chapter, we present a brief survey of past literature in the domain of robot navigation in human crowds. To address this problem, these works either assume or construct a model of human motion which is used to predict future trajectories. Given these predictions, they then proceed to plan the path for the robot to navigate through the crowd to its destination. Thus, the efficacy of these approaches depend on the accuracy of their human future trajectory predictions and robot path planning algorithms. As a part of this survey, we will present these aspects of the approaches in the context of our problem.
+
+There has been a diverse set of works over the past two decades that have tackled the problem of robot navigation in human crowds. These approaches make varied assumptions, have different objectives and exhibit a wide range of results. We try to broadly classify these approaches according to their methodology, and highlight the benefits and drawbacks. More specifically, we will categorize the approaches based on their modeling assumptions and their planning objective. For each category, a brief description of the employed methodology is discussed in addition to its advantages and disadvantages. The intent of this chapter is to present the landscape of past research in this field to give some perspective and context to our proposed work presented in the coming chapters.
+
+\section{Taxonomy of Approaches}
+\label{sec:taxonomy-approaches}
+
+We broadly classify past works on the basis of their (1) objective of the planning algorithm, and (2) human motion model to predict future trajectories. The resulting classes are described in the following subsections.
+
+\subsection{Planning Objective}
+\label{sec:planning-objective}
+Planning the robot's path through the crowd involves several constraints that need to be satisfied. Collision-avoidance, dynamic feasibility and socially-compliant are some such constraints that typical path planning algorithms consider. Collision-avoidance is self-explanatory in that it needs the robot to move such that it avoids collision with any human in the crowd. Dynamic feasibility implies that the path planned needs to be feasible for the robot to execute with its dynamics and motion model. In contrast, social compliance is a complex constraint that is hard to rigidly define. In broad terms, it implies that the resulting path for the robot needs to adhere to social norms followed by humans, thus making the path interpretable and predictable for humans in the crowd. Given these constraints, we can broadly classify past works as,
+
+\subsubsection{Safe Robot Navigation}
+\label{sec:safe-robot-navig}
+
+The objective of these set of works involve the task of navigating a robot safely through a human crowds avoiding collisions and planning a dynamically-feasible path. As a result, these works do not consider the social aspects of navigation and hence, the resulting path of the robot may not be ``human-like'' (but it is safe).
+
+\subsubsection{Social Robot Navigation}
+\label{sec:soci-robot-navig}
+
+These works tackle the more difficult objective of not only safe robot navigation (as above), but also to move in a socially compliant way. Thus, the resulting robot paths are more predictable for the surrounding humans in the crowd.
+
+\subsubsection{Trajectory prediction}
+\label{sec:traj-pred}
+
+The set of works in this class do not necessarily involve robot navigation, but rather tackle the problem of accurately modeling human trajectories in crowds. As shown in section \ref{sec:intro-planning-as-inference}, planning the path for the robot reduces to inference in this model, thereby obtaining a path for the robot that is ``human-like'' or socially-compliant. Most of the works in this category are from the domain of video surveillance tracking and computer vision.
+
+
+
+\subsection{Human Motion Model}
+\label{sec:human-motion-model}
+
+For robots to navigate human crowds, they need to employ a model of human motion in crowds so that accurate predictions of their future trajectories can be made. These predictions are then fed into a planning algorithm to plan the final trajectory for the robot to follow to navigate through the crowd. We can broadly classify past works based on the human motion model employed as,
+
+\subsubsection{Independent Handcrafted Model (IH)}
+\label{sec:indep-handcr-model}
+
+These approaches model each agent (or human) in the crowd independently of each other, i.e. they assume that the predictions for human trajectories are mutually independent. In addition to this assumption, the motion model is handcrafted (like a rule-based model) to match social behavior usually observed in crowds.
+
+\subsubsection{Independent Trained Model (IT)}
+\label{sec:indep-train-model}
+
+Similar to the IH category, works in this class make the independence assumption but the model, instead of being handcrafted, is learned by training it on real-world human trajectory data.
+
+\subsubsection{Joint Handcrafted Model (JH)}
+\label{sec:joint-handcr-model}
+
+Unlike the independent models, these works assume that the predictions are dependent on each other and jointly predict the trajectories of all interacting humans in the crowd. Most of these approaches don't model the joint distribution of trajectories explicitly, instead use some approximate handcrafted potential terms to capture the interactions.
+
+\subsubsection{Joint Trained Model (JT)}
+\label{sec:joint-trained-model}
+
+Similar to the JH class of works, these approaches jointly predict the trajectories of all humans in the crowd but the joint distribution is learned from real-world human trajectory data, and the learned model is used at inference time to make predictions. \\
+
+
+
+
+In each of the categories in the above taxonomy, there are several related works. For conciseness purposes, we describe only the latest works that have been shown to perform better than others in their respective category. We would like to point out that our list of works is not exhaustive and doesn't list all the related past approaches. The taxonomy and the related works have been summarized in table \ref{tab:taxonomy}.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|p{5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|}
+    \hline
+     & \textbf{IH} & \textbf{IT} & \textbf{JH} & \textbf{JT}\\
+    \hline
+    \textbf{Safe robot navigation} & \cite{hoeller2007accompanying} & \cite{aoude2013probabilistically}& \cite{trautman2015robot} & \cite{kim2014brvo} \\
+    \hline
+    \textbf{Social robot navigation} & \cite{kirby2009companion} & \cite{kim2016socially} & \cite{shiomi2014towards} & \cite{kretzschmar2016socially} \\
+    \hline
+    \textbf{Trajectory prediction} & \begin{center}{\textbf{-}}\end{center} & \cite{joseph2011bayesian, kitani2012activity} & \cite{luber2010people} & \cite{pellegrini2010improving, alahi16} \\
+    \hline
+  \end{tabular}
+  \caption{Taxonomy of related works}
+  \label{tab:taxonomy}
+\end{table}
+
+\section{Safe Robot Navigation}
+\label{sec:safe-robot-navig-1}
+
+\section{Social Robot Navigation}
+\label{sec:soci-robot-navig-1}
+
+\section{Trajectory Prediction}
+\label{sec:traj-pred-2}
+
+
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "thesis"

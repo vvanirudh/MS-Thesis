@@ -1,7 +1,7 @@
 \note{This chapter should be adapted from SoCS 2016 paper.}
 
 \section{Introduction}
-\label{sec:introduction}
+\label{sec:ppad-introduction}
 
 It is important for mobile robots to be able to generate collision-free paths in environments that contain both static and dynamic obstacles.
 In static environments, robots can efficiently generate a collision-free path using the occupancy gridmap of the environment. But in dynamic environments, to account for the dynamic nature of obstacles, the robot needs to predict the future trajectories of these obstacles to plan its own path accordingly. These predictions involve a high degree of uncertainty due to sensor limitations and incorrect dynamic models. As a result, the predicted trajectories are subject to frequent changes due to incorrect predictions, which makes it necessary to generate new plans in a timely manner.
@@ -15,12 +15,27 @@ The Adaptive Dimensionality (AD) approach, \cite{gochev2011path}, exploits the o
 
 Following this insight, we consider the time dimension only in those regions where a potential collision could occur and ignore it elsewhere. In this paper, we develop an approach that can achieve speedups over full-dimensional heuristic-based A* without any assumptions on robot capabilities by employing a variant of the Adaptive Dimensionality approach.
 
-In the remainder of this chapter, we will give an overview of relevant existing work in Section \ref{sec:related-work}. 
-The planning problem is formally defined in Section \ref{sec:problem} and the motivation for our approach is presented in Section \ref{sec:motivation}.
-Sections \ref{sec:approach} and \ref{sec:theory} will describe our approach and prove the theoretical guarantees. The efficiency of the method is demonstrated by applying it to a 3D non-holonomic robot navigation problem in the presence of dynamic obstacles, showing a significant increase in speed over 4D heuristic-based A* planner for this task, in Sections \ref{sec:exp} and \ref{sec:results}.
+Given a path planning problem in a high dimensional space, it is possible to find an optimal solution through a complete search. For example, heuristic-based A* variant algorithms exist that are guaranteed to find an optimal solution~\cite{silver2005cooperative}. Because these algorithms rely on low-dimensional heuristics, search can be counter-intuitive.  
+
+Consider the example shown in Figure \ref{fig:motivation}, where the resulting path (dash-dot path), in the absence of the dynamic obstacle (disc), is towards the heuristic. But, in the presence of the dynamic obstacle, this path is in collision and cannot be executed. Hence, we need to come up with the alternative path (dashed path), which is against the heuristic. Heuristic-based A* would expand a large number of states and will take a long time to generate the new path whereas our approach generates the alternative path quickly, because it plans in a lower dimensional space.
+
+\begin{figure}[tb!]
+\centering%
+\includegraphics[width=0.7\linewidth]{Figures/intro.eps}%
+\caption{Example of a dynamic environment where the heuristic leads the robot (blue square) into collision (on blue dash-dot path) with the dynamic obstacle (red disc). We need to find an alternate path (green dashed path) from A to B without expanding a large number of states.}%
+\label{fig:motivation}
+\end{figure}
+
+More generally, we observe that substantial sections of paths found are not in collision with any dynamic obstacles, implying that we need not consider the time dimension in such regions. We can obtain quicker planning times by planning in low dimensional state-space for those regions and in full dimensional state-space only where it is necessary to reason about a potential collision with an obstacle. 
+
+Based on these observations, we explore the idea of adaptive dimensionality to solve the target problem.
+
+In the remainder of this chapter, we will give an overview of relevant existing work in Section \ref{sec:ppad-related-work}. 
+The planning problem is formally defined in Section \ref{sec:ppad-problem}.
+Sections \ref{sec:ppad-approach} and \ref{sec:ppad-theory} will describe our approach and prove the theoretical guarantees. The efficiency of the method is demonstrated by applying it to a 3D non-holonomic robot navigation problem in the presence of dynamic obstacles, showing a significant increase in speed over 4D heuristic-based A* planner for this task, in Sections \ref{sec:ppad-exp} and \ref{sec:ppad-results}.
 
 \section{Related Work}
-\label{sec:related-work}
+\label{sec:ppad-related-work}
 Our work is relevant to path planning in dynamic environments and works on coping with high dimensionality. In general, we divide the existing approaches into three categories: works that deal with planning in dynamic environments, that deal with high-dimensional planning using adaptive dimensionality and that use hybrid dimensionality path planning in dynamic environments.
 
 \subsection{Path Planning in Dynamic Environments}
@@ -54,7 +69,7 @@ By contrast, the Adaptive Dimensionality (AD) approach, \cite{gochev2011path}, e
 \subsection{Hybrid Dimensionality in Dynamic Environments}
 Some approaches only plan in full-dimensional space-time search space until the end of an obstacle's trajectory and then finish the plan in a low-dimensional state-space. Time-bounded lattice planning, \cite{kushleyev2009time}, neglects dynamic obstacles and the time dimension in the search space after a certain point in the time. Several works, \cite{petereit2013mobile,petereit2014combined}, have extended this algorithm to account for kinematic and dynamic feasibility in the resulting paths by using a hybrid dimensionality state-space. These approaches sacrifice optimality for faster planning times and don't provide theoretical guarantees on the sub-optimality of the solution. In addition, our algorithm doesn't prune the dynamic obstacle trajectories, instead takes the entire obstacle trajectories into account and returns a bounded sub-optimal collision-free path. Considering the entire trajectory of the obstacles ensures a globally optimal solution.
 
-\section{Problem Definition}\label{sec:problem}
+\section{Problem Definition}\label{sec:ppad-problem}
 
 In this paper, we follow the simplifying assumptions used in~\cite{phillips2011sipp} that the trajectories of moving obstacles are known and that obstacles move at a constant speed. Based on these assumptions, path planning in a dynamic environment can be formulated more generally as path planning in a high-dimensional space as follows. A path planning problem is defined as a tuple $\Phi = [G = (S, T), c, X_{s}, X_{g}]$, where $G$ denotes a graph consisting of $S$, a set of discretized states in a $d$-dimensional space, and $T$, a set of feasible transitions between each pair of states $X_i, X_j \in S$; $c$, a function encoding a non-negative cost $c(X_i,X_j)$ for each pair of transitions $(X_i,X_j) \in T$; $X_{s} \in S$, a start state, and $X_{g} \in S$, a goal state. For instance, the target problem for a ground vehicle can be defined in 4-D state space $(x, y, \theta, t)$ where each variable denotes $x$-coordinate, $y$-coordinate, vehicle heading, and time, respectively. Note that transitions that result in collision with an obstacle are assigned infinite cost, making them invalid. 
 
@@ -63,24 +78,7 @@ A path between states $X_i$ and $X_j$ is denoted by $\pi(X_i,X_j)$, and the cost
 Given a planning problem $\Phi = [G, c, X_{s}, X_{g}]$, the goal is to find a minimum cost path between the two states $X_{s}$ and $X_{g}$, denoted by $\pi^*(X_s,X_g)$. 
 Alternatively, given a suboptimality bound $\epsilon$, the goal of the planner can be relaxed to find a path $\pi(X_S,X_G)$ such that its cost $c(\pi(X_S,X_G)) \leq \epsilon \cdot c(\pi^*(X_S,X_G))$.
 
-\section{Motivation}\label{sec:motivation}
-
-Given a path planning problem in a high dimensional space, it is possible to find an optimal solution through a complete search. For example, heuristic-based A* variant algorithms exist that are guaranteed to find an optimal solution~\cite{silver2005cooperative}. Because these algorithms rely on low-dimensional heuristics, search can be counter-intuitive.  
-
-Consider the example shown in Figure \ref{fig:intro}, where the resulting path (dash-dot path), in the absence of the dynamic obstacle (disc), is towards the heuristic. But, in the presence of the dynamic obstacle, this path is in collision and cannot be executed. Hence, we need to come up with the alternative path (dashed path), which is against the heuristic. Heuristic-based A* would expand a large number of states and will take a long time to generate the new path whereas our approach generates the alternative path quickly, because it plans in a lower dimensional space.
-
-\begin{figure}[tb!]
-\centering%
-\includegraphics[scale=0.4]{Figures/intro.png}%
-\caption{Example of a dynamic environment where the heuristic leads the robot (square) into collision (on dash-dot path) with the dynamic obstacle (disc) at C. We need to find an alternate path (dashed path) from A to B without expanding a large number of states.}%
-\label{fig:intro}
-\end{figure}
-
-More generally, we observe that substantial sections of paths found are not in collision with any dynamic obstacles, implying that we need not consider the time dimension in such regions. We can obtain quicker planning times by planning in low dimensional state-space for those regions and in full dimensional state-space only where it is necessary to reason about a potential collision with an obstacle. 
-
-Based on these observations, we explore the idea of adaptive dimensionality to solve the target problem.
-
-\section{Approach}\label{sec:approach}
+\section{Approach}\label{sec:ppad-approach}
 
 We describe the adaptive dimensionality approach used for path planning in dynamic environments, and the algorithm for finding a bounded cost sub-optimal path.
 
@@ -99,7 +97,7 @@ with a constraint that transitions in a high-dimensional space are more expensiv
 c(\pi^*_{G^{hd}}(X_i,X_j)) \geq c(\pi^*_{G^{ld}}(\lambda(X_i), \lambda(X_j)))
 \label{eq:cost}
 \end{equation}
-We note that this constraint is important for bounding the suboptimality that will be discussed later in Section~\ref{sec:theory}.
+We note that this constraint is important for bounding the suboptimality that will be discussed later in Section~\ref{sec:ppad-theory}.
 
 
 
@@ -107,41 +105,41 @@ We note that this constraint is important for bounding the suboptimality that wi
   \centering
   \begin{subfigure}[t]{0.3\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{Figures/alg1.png}
+    \includegraphics[width=\linewidth]{Figures/alg1_c.png}
     \caption{HD region at the start}
   \end{subfigure}
   ~
   \begin{subfigure}[t]{0.3\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{Figures/alg2.png}
+    \includegraphics[width=\linewidth]{Figures/alg2_c.png}
     \caption{Path returned by planning phase in first iteration}
   \end{subfigure}
   ~
   \begin{subfigure}[t]{0.3\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{Figures/alg3.png}
+    \includegraphics[width=\linewidth]{Figures/alg3_c.png}
     \caption{Search cannot progress in tunnel due to collision}
   \end{subfigure}
   
   \begin{subfigure}[t]{0.3\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{Figures/alg4.png}
+    \includegraphics[width=\linewidth]{Figures/alg4_c.png}
     \caption{HD region introduced at point of collision}
   \end{subfigure}
   ~
   \begin{subfigure}[t]{0.3\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{Figures/alg5.png}
+    \includegraphics[width=\linewidth]{Figures/alg5_c.png}
     \caption{Path returned by planning phase in second iteration}
   \end{subfigure}
   ~
   \begin{subfigure}[t]{0.3\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{Figures/alg6.png}
+    \includegraphics[width=\linewidth]{Figures/alg6_c.png}
     \caption{Tracking successful and path returned as solution}
   \end{subfigure}
 
-  \caption{Example run of the algorithm on a sample map. HD regions are indicated by white circles, paths of dynamic obstacles by gray lines and path found using our approach by white lines.}
+  \caption{Example run of the algorithm on a sample map. HD regions are indicated by blue circles, paths of dynamic obstacles by red lines and path found using our approach by green line.}
   \label{fig:alg}
 \end{figure*}
 
@@ -239,7 +237,7 @@ We start with $G^{ad}$ same as $G^{ld}$ and a high-dimensional region added at t
 \end{algorithm}
 
 \section{Theoretical Properties}
-\label{sec:theory}
+\label{sec:ppad-theory}
 The given algorithm is complete with respect to the underlying graph $G^{hd}$ and provides a sub-optimality bound on the cost of the returned path. \\ \\
 \textbf{Theorem 5.1} \textit{If a path $\pi_\tau^*(X_S,X_G^{hd})$ is found in the tracking phase, it is guaranteed to be collision-free with respect to all obstacles} \\
 \textbf{Proof} The tunnel $\tau$ constructed around $\pi_{G^{ad}}^*$ is entirely high-dimensional and is a subgraph of $G^{hd}$ therefore, the search space considers the transition set $T^{hd}$. In $T^{hd}$, transitions that are in collision with dynamic obstacles are assigned infinite cost, essentially making them invalid.
@@ -262,7 +260,7 @@ Hence, the path found in the tunnel $\pi_\tau^*$ is guaranteed to be collision-f
 \fi
 
 \section{Experiments}
-\label{sec:exp}
+\label{sec:ppad-exp}
 For an experimental evaluation of the presented approach we use the domain of robotic path planning in dynamic environments for 3D-$(x,y,\theta)$ non-holonomic robot. To successfully avoid dynamic obstacles in the environment, we will need to add the time dimension to the state-space while planning. Hence, the full-dimensional planning has a 4D $(x,y,\theta,t)$ state-space. Our implementation of the algorithm kept track of the high-dimensional regions in the environment as spheres: 2D $(x,y)$ circles, in the 4D planning case, as this allowed to quickly check if a state falls inside a region or not, and also quickly add new regions or grow existing regions. 
 
 We modeled our environment as a planar world and the robot as a polygonal object with a unicycle motion model, which doesn't allow waiting in place actions. Our adaptive-dimensionality space consists of a 2D $(x,y)$ low-dimensional state-space and a 4D $(x,y,\theta,t)$ high-dimensional state-space, where $\theta$  is the heading of the robot. Thus the projection function is:
@@ -283,7 +281,7 @@ We used a set of 16-discretized values for the heading angle and a maximum value
     \includegraphics[width=\linewidth]{Figures/indoor.png}
     \caption{Indoor environment}
   \end{subfigure}
-  \caption{Example maps, with paths (gray) of dynamic obstacles shown, used in our experiments. Static obstacles are shown in white and free space in black.}
+  \caption{Example maps, with paths (green) of dynamic obstacles shown, used in our experiments. Static obstacles are shown in yellow and free space in blue.}
   \label{fig:env}
 \end{figure}
  
@@ -402,7 +400,7 @@ Adaptive & 48 & 2.0 & 22.9 & 36.2 & 18922 & 22002 & 44550 & 107434 & 538370 & 92
 \label{tab:maze-30}
 \end{table*}
 \section{Results}
-\label{sec:results}
+\label{sec:ppad-results}
 For both sets of environments, we compare the planning time, number of high-dimensional (4D) states expanded, number of low-dimensional (2D) states expanded and resulting path cost, between our approach and the baseline 4D HCA* approach. We also list out the number of cases among the set of 50 environments that our approach could come up with a solution within 5 minutes of planning time and the number of cases the baseline approach could. Note that statistics like mean planning time, number of HD expansions, number of LD expansions and path cost, are computed only on cases where both approaches could come up with a solution within 5 minutes.
 
 
@@ -412,13 +410,13 @@ Tables \ref{tab:indoor-10} and \ref{tab:indoor-30} present the results for 50 ra
 The results for the 50 randomly generated maze-like environments with 10 and 30 dynamic obstacles are presented in tables \ref{tab:maze-10} and \ref{tab:maze-30}. These environments are characterized by tight turns and potential dynamic obstacle collisions at the gaps in the walls. In most cases, the robot would have to swerve around the obstacle to avoid collision. Hence, the resulting path doesn't deviate significantly from the one suggested by heuristic. From the results we can observe that when the planning problem is difficult (for example, when $\epsilon = 1.1$), our approach could solve a large number of cases (47 and 46 of 50) when compared to the baseline (4 and 2 of 50). But as the $\epsilon$ value increases and the planning problem becomes easier, performance of baseline quickly catches up with our approach and in one of the case, outperforms our approach as well ($\epsilon=2$ in the 30 dynamic obstacles case). But in most runs, our approach performs better than the baseline in mean planning time and the path cost. Results across tables \ref{tab:maze-10} and \ref{tab:maze-30} show that there is not as much decrease in the performance of baseline with increase in number of obstacles, when compared to the indoor environments.
 
 \section{Discussion}
-\label{sec:discussion}
+\label{sec:ppad-discussion}
 
 Interestingly, in indoor environments our approach returns paths with higher costs (but still within the suboptimality bound) when compared to the baseline approach. This is due to the fast low-dimensional 2D planning used in our approach which when a hallway is blocked finds an alternative path through an adjacent hallway, even if it is against heuristic. In contrast, the baseline tries to go through the blocked hallway suggested by the heuristic by wasting time before and entering the hallway once the obstacle comes out. Hence, the path returned by baseline often has low cost.
 
 Generally, in environments where dynamic obstacles do not block the path suggested by heuristic, the baseline approach is fast and often outperforms our approach. This is the case in maze-like environments where the robot has to just swerve around the obstacle to avoid it. Hence, we see a good performance of baseline in such cases. But in cases where the solution required a path significantly different from the one computed by heuristic, baseline performs poorly and our approach outperforms it. This is the case in indoor environments where the entire hallway is blocked by an obstacle and the planner has to find an alternative path which might be against the heuristic. In such environments, as the number of dynamic obstacles increases, the heuristic becomes less informative and performance of baseline degrades. Our approach circumvents this through its iterative nature and fast low-dimensional planning.
 
-\section{Conclusion and Future Work}\label{sec:conclusion}
+\section{Conclusion and Future Work}\label{sec:ppad-conclusion}
 
 In this work we have presented a new approach to path planning in dynamic environments that doesn't make any assumptions on the robot's motion model, but still achieves significant speedups in planning time over heuristic-based A*.
 Our algorithm builds on the previously-developed algorithm for path planning with adaptive dimensionality to explicitly decrease the dimensionality of the search space in an adaptive manner.

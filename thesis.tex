@@ -49,6 +49,7 @@
 
 
 \newcommand{\clearemptydoublepage}{\newpage{\pagestyle{empty}\cleardoublepage}}
+\newcommand*\NewPage{\newpage\null\thispagestyle{empty}\newpage}
 
 %Table of contents stuff
 \setcounter{tocdepth}{1}
@@ -70,10 +71,19 @@
 %start the forematter 
 \pagenumbering{Roman}
 \clearemptydoublepage
+\NewPage
 \setcounter{page}{1}
 
 \begin{centering} \section*{Abstract} \end{centering}
 \input{abstract.tex}
+
+\NewPage
+
+\begin{centering} \section*{Acknowledgements} \end{centering}
+\input{acknowledgements.tex}
+
+\NewPage
+
 
 \tableofcontents
 \clearpage
@@ -102,13 +112,13 @@
 
 \clearpage
 
-\chapter{Path Planning in Dynamic Environments}
+\chapter{Path Planning in Dynamic Environments with Adaptive Dimensionality}
 \label{chap:ppad}
 \input{ppad.tex}
 
 \clearpage
 
-\chapter{Human Trajectory Prediction in Dense Crowds}
+\chapter{Modeling Cooperative Navigation in Dense Human Crowds}
 \label{chap:oigp}
 \input{oigp.tex}
 
@@ -125,7 +135,8 @@
 \input{conclusion.tex}
 
 %Include references using bst and bib files.
-\bibliographystyle{finitplain} 
+\bibliographystyle{finitplain}
+%\bibliographystyle{apalike} 
 {\small \bibliography{local}}
 
 

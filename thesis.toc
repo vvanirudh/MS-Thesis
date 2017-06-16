@@ -1,46 +1,58 @@
 \contentsline {chapter}{\numberline {1}Introduction}{1}
 \contentsline {chapter}{\numberline {2}A Survey of Navigation in Human Crowds}{2}
-\contentsline {chapter}{\numberline {3}Path Planning in Dynamic Environments}{3}
-\contentsline {section}{\numberline {3.1}Introduction}{3}
-\contentsline {section}{\numberline {3.2}Related Work}{4}
-\contentsline {subsection}{\numberline {3.2.1}Path Planning in Dynamic Environments}{4}
-\contentsline {subsection}{\numberline {3.2.2}Adaptive Dimensionality}{5}
-\contentsline {subsection}{\numberline {3.2.3}Hybrid Dimensionality in Dynamic Environments}{5}
-\contentsline {section}{\numberline {3.3}Problem Definition}{5}
-\contentsline {section}{\numberline {3.4}Motivation}{6}
-\contentsline {section}{\numberline {3.5}Approach}{7}
-\contentsline {subsection}{\numberline {3.5.1}Adaptive Dimensionality for Dynamic Environments}{7}
-\contentsline {subsection}{\numberline {3.5.2}Algorithm}{9}
-\contentsline {subsubsection}{Adaptive Dimensionality Graph Construction}{9}
-\contentsline {subsubsection}{Main Loop}{9}
-\contentsline {section}{\numberline {3.6}Theoretical Properties}{10}
-\contentsline {section}{\numberline {3.7}Experiments}{11}
-\contentsline {section}{\numberline {3.8}Results}{13}
-\contentsline {section}{\numberline {3.9}Discussion}{15}
-\contentsline {section}{\numberline {3.10}Conclusion and Future Work}{15}
-\contentsline {chapter}{\numberline {4}Human Trajectory Prediction in Dense Crowds}{16}
-\contentsline {section}{\numberline {4.1}Introduction}{16}
-\contentsline {section}{\numberline {4.2}Related Work}{18}
-\contentsline {subsection}{\numberline {4.2.1}Navigation in Uncertain Dynamic Environments}{18}
-\contentsline {subsection}{\numberline {4.2.2}Modeling human interactions}{18}
-\contentsline {subsection}{\numberline {4.2.3}Trajectory prediction}{19}
-\contentsline {section}{\numberline {4.3}Problem Definition}{19}
-\contentsline {subsection}{\numberline {4.3.1}Notation}{19}
-\contentsline {subsection}{\numberline {4.3.2}Planning using the joint density}{19}
-\contentsline {subsection}{\numberline {4.3.3}Problem}{20}
-\contentsline {section}{\numberline {4.4}Approach}{20}
-\contentsline {subsection}{\numberline {4.4.1}Constructing occupancy grids}{21}
-\contentsline {subsection}{\numberline {4.4.2}Preparing training data for learning}{21}
-\contentsline {subsection}{\numberline {4.4.3}Training the local interaction model}{21}
-\contentsline {subsection}{\numberline {4.4.4}Prediction}{22}
-\contentsline {subsubsection}{Infer goal of a pedestrian}{22}
-\contentsline {subsubsection}{Predicting future trajectories}{23}
-\contentsline {subsubsection}{Multi-step prediction}{23}
-\contentsline {section}{\numberline {4.5}Evaluation}{24}
-\contentsline {subsection}{\numberline {4.5.1}Setup}{24}
-\contentsline {subsection}{\numberline {4.5.2}Model Parameters}{26}
-\contentsline {subsection}{\numberline {4.5.3}Results}{26}
-\contentsline {section}{\numberline {4.6}Discussion}{28}
-\contentsline {section}{\numberline {4.7}Conclusion and Future Work}{28}
-\contentsline {chapter}{\numberline {5}Attention in Human Crowds}{30}
-\contentsline {chapter}{\numberline {6}Conclusion}{31}
+\contentsline {section}{\numberline {2.1}Taxonomy of Approaches}{2}
+\contentsline {subsection}{\numberline {2.1.1}Planning Objective}{2}
+\contentsline {subsubsection}{Safe Robot Navigation}{3}
+\contentsline {subsubsection}{Social Robot Navigation}{3}
+\contentsline {subsubsection}{Trajectory prediction}{3}
+\contentsline {subsection}{\numberline {2.1.2}Human Motion Model}{3}
+\contentsline {subsubsection}{Independent Handcrafted Model (IH)}{3}
+\contentsline {subsubsection}{Independent Trained Model (IT)}{3}
+\contentsline {subsubsection}{Joint Handcrafted Model (JH)}{4}
+\contentsline {subsubsection}{Joint Trained Model (JT)}{4}
+\contentsline {section}{\numberline {2.2}Safe Robot Navigation}{4}
+\contentsline {section}{\numberline {2.3}Social Robot Navigation}{4}
+\contentsline {section}{\numberline {2.4}Trajectory Prediction}{4}
+\contentsline {chapter}{\numberline {3}Path Planning in Dynamic Environments with Adaptive Dimensionality}{5}
+\contentsline {section}{\numberline {3.1}Introduction}{5}
+\contentsline {section}{\numberline {3.2}Related Work}{7}
+\contentsline {subsection}{\numberline {3.2.1}Path Planning in Dynamic Environments}{7}
+\contentsline {subsection}{\numberline {3.2.2}Adaptive Dimensionality}{8}
+\contentsline {subsection}{\numberline {3.2.3}Hybrid Dimensionality in Dynamic Environments}{8}
+\contentsline {section}{\numberline {3.3}Problem Definition}{8}
+\contentsline {section}{\numberline {3.4}Approach}{9}
+\contentsline {subsection}{\numberline {3.4.1}Adaptive Dimensionality for Dynamic Environments}{9}
+\contentsline {subsection}{\numberline {3.4.2}Algorithm}{11}
+\contentsline {subsubsection}{Adaptive Dimensionality Graph Construction}{11}
+\contentsline {subsubsection}{Main Loop}{11}
+\contentsline {section}{\numberline {3.5}Theoretical Properties}{13}
+\contentsline {section}{\numberline {3.6}Experiments}{13}
+\contentsline {section}{\numberline {3.7}Results}{16}
+\contentsline {section}{\numberline {3.8}Discussion}{17}
+\contentsline {section}{\numberline {3.9}Conclusion and Future Work}{17}
+\contentsline {chapter}{\numberline {4}Modeling Cooperative Navigation in Dense Human Crowds}{19}
+\contentsline {section}{\numberline {4.1}Introduction}{19}
+\contentsline {section}{\numberline {4.2}Related Work}{21}
+\contentsline {subsection}{\numberline {4.2.1}Navigation in Uncertain Dynamic Environments}{21}
+\contentsline {subsection}{\numberline {4.2.2}Modeling human interactions}{21}
+\contentsline {subsection}{\numberline {4.2.3}Trajectory prediction}{22}
+\contentsline {section}{\numberline {4.3}Problem Definition}{22}
+\contentsline {subsection}{\numberline {4.3.1}Notation}{22}
+\contentsline {subsection}{\numberline {4.3.2}Planning using the joint density}{22}
+\contentsline {subsection}{\numberline {4.3.3}Problem}{23}
+\contentsline {section}{\numberline {4.4}Approach}{23}
+\contentsline {subsection}{\numberline {4.4.1}Constructing occupancy grids}{24}
+\contentsline {subsection}{\numberline {4.4.2}Preparing training data for learning}{24}
+\contentsline {subsection}{\numberline {4.4.3}Training the local interaction model}{24}
+\contentsline {subsection}{\numberline {4.4.4}Prediction}{25}
+\contentsline {subsubsection}{Infer goal of a pedestrian}{25}
+\contentsline {subsubsection}{Predicting future trajectories}{26}
+\contentsline {subsubsection}{Multi-step prediction}{26}
+\contentsline {section}{\numberline {4.5}Evaluation}{27}
+\contentsline {subsection}{\numberline {4.5.1}Setup}{27}
+\contentsline {subsection}{\numberline {4.5.2}Model Parameters}{29}
+\contentsline {subsection}{\numberline {4.5.3}Results}{29}
+\contentsline {section}{\numberline {4.6}Discussion}{31}
+\contentsline {section}{\numberline {4.7}Conclusion and Future Work}{31}
+\contentsline {chapter}{\numberline {5}Attention in Human Crowds}{33}
+\contentsline {chapter}{\numberline {6}Conclusion}{34}
