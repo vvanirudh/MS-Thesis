@@ -22,6 +22,7 @@
 \usepackage{layouts,array,wrapfig}
 \usepackage[normalem]{ulem}
 \usepackage{tgpagella}
+\usepackage{hyperref}
 \newcommand*{\QEDB}{\hfill\ensuremath{\square}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36,7 +37,19 @@
 %DF: Nuke all the notes by using 
 %the second note definition below
 \newcommand{\note}[1]{\textcolor{red}{#1}}
-%\newcommand{\note}[1]{}
+% \newcommand{\note}[1]{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Hyperlink setup
+\hypersetup{
+    colorlinks,
+    citecolor=blue,
+    filecolor=black,
+    linkcolor=red,
+    urlcolor=blue
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
 
 
 %I usually like to put more figures on a page with text than latex's
@@ -70,10 +83,9 @@
 
 %start the forematter 
 \pagenumbering{Roman}
-\clearemptydoublepage
-\NewPage
-\setcounter{page}{1}
 
+\setcounter{page}{1}
+\NewPage
 \begin{centering} \section*{Abstract} \end{centering}
 \input{abstract.tex}
 
@@ -106,7 +118,7 @@
 
 \clearpage
 
-\chapter{A Survey of Navigation in Human Crowds}
+\chapter{Navigation in Human Crowds : A Survey}
 \label{chap:survey}
 \input{survey.tex}
 

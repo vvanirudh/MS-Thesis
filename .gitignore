@@ -6,3 +6,5 @@ auto
 *.pdf
 Figures/extra
 _*
+*.out
+*.toc

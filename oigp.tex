@@ -1,48 +1,33 @@
 \note{This chapter should be adapted from the ICRA 2017 paper.}
 \section{Introduction}
-\label{sec:introduction}
+\label{sec:oigp-introduction}
 
 There is an increasing need for robots to operate in the midst of
 human crowds. This requires the robot to be able to navigate through a
 crowd in a socially compliant way, i.e., the robot needs to
 collaboratively avoid collisions with humans and adapt its
 trajectories in a human predictable manner.
-%
-%
-%
-%
+
 To date, the majority of existing works in the area of social
 navigation has focused on the prediction of individual motion patterns
 in the crowd to improve the navigation performance~\cite{thompson09,
   bennewitz05, large04}. However, even in the case of perfect
 prediction, these approaches can lead to
-%
 severely suboptimal paths \cite{trautman10}.
-%
 The primary reason for such underperformance is that these approaches
 do not capture the complex and often subtle interactions that take
 place among humans in a crowd; that is, these approaches model each
 agent independently of the others. This observation leads to the
 insight that agents in crowds engage in joint collision avoidance.
-%
-
-%
-%
-%
-%
 
 Humans navigate through dense crowds by adapting their trajectories
-%
 to those of other people in the vicinity.
-%
-Figure~\ref{fig:intro} shows three examples of such behavior where
+Figure~\ref{fig:oigp-intro} shows three examples of such behavior where
 people pass through, slow down, or go around when they are near
 other pedestrians.
-%
 In order to learn to navigate in a socially compliant way, it is key
 to capture such human-human interactions observed in a crowd.
-%
-%
+
 Pioneering works by~\cite{helbing95,hall63} propose hand-crafted
 functions to model such interactions based on proximity. Such
 functions are, however, limited in the complexity of interactions that
@@ -52,15 +37,14 @@ human-human and human-robot interactions to enable a robot to safely
 navigate in a dense crowd. The trajectories of the robot and the
 humans are jointly predicted with a hand-crafted potential term to
 model interactions.
-%
-%
+
 Because the potential term is hand-crafted, it is possible that the
 robot trajectories generated may not resemble socially compliant human
 behavior.  In this paper, we learn the interaction model from
 real-world pedestrian trajectories in order to predict human-like
 trajectories.
 
-%
+
 In safety-critical applications like robotics, where robots are
 expected to navigate safely among humans, we need to account for
 uncertainty in our predictions. Those approaches that learn
@@ -82,19 +66,16 @@ results in accurate predictions.
     pedestrian (with red arrow) to pass through. (Right) The two
     pedestrians (with green arrows) make way for the oncoming agents
     (with red arrow) by going around them.}
-  \label{fig:intro}
+  \label{fig:oigp-intro}
   \vspace{-15pt}
 \end{figure}
 
-%
-%
-%
+
+
+
 The summary of our contributions in this paper are as follows: We
 develop a new algorithm for enabling robots to move naturally through
 dense crowds.
-%
-%
-%
 Following the key insight that agents in crowd engage in \textit{joint
   collision avoidance}, we develop an approach that models the
 distribution over future trajectories of all interacting agents
@@ -111,25 +92,25 @@ human-like by reporting the experimental results on the ETH pedestrian
 video dataset~\cite{pellegrini09}.
 
 In the remainder of this paper, we will give an overview of relevant
-existing work in section \ref{sec:related-work}. The notation and the
-problem is defined in section \ref{sec:problem-definition}. Section
-\ref{sec:approach} will describe our approach in detail and its
+existing work in section \ref{sec:oigp-related-work}. The notation and the
+problem is defined in section \ref{sec:oigp-problem-definition}. Section
+\ref{sec:oigp-approach} will describe our approach in detail and its
 evaluation on a real world dataset is presented in section
-\ref{sec:evaluation}. The results of the evaluation are discussed in
-section \ref{sec:discussion} and the conclusions are presented in
-section \ref{sec:conclusion}, along with directions for future work.
+\ref{sec:oigp-evaluation}. The results of the evaluation are discussed in
+section \ref{sec:oigp-discussion} and the conclusions are presented in
+section \ref{sec:oigp-conclusion}, along with directions for future work.
 
 \section{Related Work}
-\label{sec:related-work}
+\label{sec:oigp-related-work}
 
 \subsection{Navigation in Uncertain Dynamic Environments}
-\label{sec:navig-dynam-envir}
+\label{sec:oigp-navig-dynam-envir}
 Common approaches to robot navigation in uncertain, populated environments typically compute a path to the goal without taking into account the collaborative collision avoidance behavior exhibited by humans. Most of the approaches instead rely on local reactive collision avoidance methods \cite{philippsen2003smooth, thrun99}. Although these methods effectively avoid collisions with humans, the planned trajectories are usually suboptimal, compared to the trajectory a human would take for the same start and goal, and not socially compliant due to evasive maneuvers.
 
 Naively modeling unpredictability in the trajectories of humans, using linear models like Kalman filters, leads to increasing uncertainty that makes safe and efficient navigation difficult \cite{trautman10}. Several works have focused on controlling the uncertainty in these predictive models by developing accurate human motion models \cite{thompson09, bennewitz05}, but these approaches do not account for interactions between humans and thus cannot model joint collision avoidance. 
 
 \subsection{Modeling human interactions}
-\label{sec:inter-betw-humans}
+\label{sec:oigp-inter-betw-humans}
 
 The social forces model proposed by \cite{helbing95} models motion of pedestrians in terms of forces that drive humans to reach a goal and to avoid obstacles. Subsequently, approaches have been proposed that use learning methods to fit the social forces model to observed crowd behavior \cite{helbing09, johansson07}. The social forces model has been shown to perform well in predicting trajectories in simulated crowds, but fails when it comes to predicting movements of pedestrians in real dense crowds as it uses a hand-crafted potential term based on distances, and doesn't learn human-human interactions from real data. Using a hand-crafted potential term results in a model that can capture simple interactions, like repulsion and attractions, but may fail to account for more complex crowd behavior. \cite{adrien06} models pedestrian motion behavior using dynamic potential fields that guide people to avoid collisions and move towards the goal, but this model does not explicitly account for interactions like cooperation between agents in the crowd.
 
@@ -153,22 +134,22 @@ However, their approach has been tested in scripted environments with no more th
 %
 
 \subsection{Trajectory prediction}
-\label{sec:traj-pred}
+\label{sec:oigp-traj-pred}
 
 A large body of works exist in the domain of computer vision and video surveillance that deal with predicting motion of people in videos, that are relevant to our work. \cite{kim11, joseph11} learn motion patterns using Gaussian processes and cluster human trajectories into these motion patterns. But these approaches ignore human-human interactions. IRL has also been used in the domain of activity forecasting to predict human paths in static scenes, \cite{kitani12} and more recently, \cite{alahi16} used Long Short-Term Memory networks (LSTM) to jointly reason across multiple agents to predict their trajectories in a scene. However, most of these approaches have been used in the context of prediction and have not been extended to navigation.
 
 \section{Problem Definition}
-\label{sec:problem-definition}
+\label{sec:oigp-problem-definition}
 
 \subsection{Notation}
-\label{sec:notation}
+\label{sec:oigp-notation}
 
 We follow the notation of \cite{trautman10}.
 Let the index $i \in \{1,2,\cdots,N\}$ specify the agent, where $N$ is the number of individuals in the crowd and $i=R$ indicates the robot. 
 The trajectory of agent $i \in \{R,1,2,\cdots,N\}$ is given by $\fbold\supi$ $= (f_1^{(i)}, f_2^{(i)}, \cdots, f_T^{(i)})$, where $T$ is the length of the trajectory and $f_t^{(i)} = (x_t^{(i)}, y_t^{(i)}) \in \mathbb{R}^2$ is the location of agent $i$ at time-step $t$. The observed locations of pedestrian $i$ until time-step $t$ is denoted as $\zbold\supi\subt = (z_1^{(i)}, z_2^{(i)}, \cdots, z_t^{(i)})$.  We denote the set of all pedestrian trajectories by $\fbold=\{\fbold\supi\}_{i=1:N}$, the robot trajectory by $\fbold\supR$, and the set of all pedestrian observations until time-step $t$ by $\zbold\subt = \{\zbold\supi\subt\}_{i=1:N}$. We assume a fixed number of goals $g$ in the environment are known and denote the set of goals by $\Gbold$. %
 
 \subsection{Planning using the joint density}
-\label{sec:planning}
+\label{sec:oigp-planning}
 %
 %
 %
@@ -192,7 +173,7 @@ Planning the path for the robot using this density corresponds to
 finding the maximum-a-priori (MAP) assignment for the following
 posterior:
 \begin{equation}
-  \label{eq:8}
+  \label{eq:oigp-8}
   (\fbold\supR, \fbold)_* = \argmax_{\fbold\supR, \fbold} P(\fbold\supR, \fbold|\zbold\subt).
 \end{equation}
 
@@ -205,7 +186,7 @@ posterior:
 %
 
 \subsection{Problem}
-\label{sec:problem}
+\label{sec:oigp-problem}
 In this work, we assume that at each time-step $t$, we receive the observation $\zbold_t$ of the locations of all agents in the crowd. Given the current and past observations $\zbold\subt$, we tackle the problem of estimating the joint posterior distribution of the future trajectories of all agents. Formally, we seek to model the density given by,
 $$ P(\fbold\supR, \fbold | \zbold\subt).$$
 %
@@ -223,7 +204,7 @@ In contrast to \cite{trautman10}, who tackle a similar problem, we aim to predic
 %
 
 \section{Approach}
-\label{sec:approach}
+\label{sec:oigp-approach}
 
 \begin{figure}[t!]
   \centering
@@ -232,7 +213,7 @@ In contrast to \cite{trautman10}, who tackle a similar problem, we aim to predic
     other agents (red) around the current agent (green). (right) 4x4
     occupancy grid is constructed using the number of agents in each
     grid cell}
-  \label{fig:ogrid}
+  \label{fig:oigp-ogrid}
   \vspace{-15pt}
 \end{figure}
 
@@ -245,20 +226,20 @@ vicinity \cite{alahi16}.
 %
 We first explain the construction of \textit{occupancy grids}, which
 account for the presence of other agents within an agent's local
-neighborhood (Section \ref{sec:occupancy}).  We formulate the problem
+neighborhood (Section \ref{sec:oigp-occupancy}).  We formulate the problem
 of learning the social interaction model as a Gaussian process
 regression problem, where we predict the agent's velocities at each
 time-step as a function of their occupancy grids and intended
 goal. Given the preprocessed training trajectories (Section
-\ref{sec:preprocessing}), we train the GP model by maximizing its
+\ref{sec:oigp-preprocessing}), we train the GP model by maximizing its
 marginal likelihood to learn the hyperparameters of the kernel
-(Section \ref{sec:train}). At prediction time, we use the learned
+(Section \ref{sec:oigp-train}). At prediction time, we use the learned
 model to infer the goal of each agent and jointly predict future
 trajectories of all interacting agents in the crowd (Section
-\ref{sec:prediction}).
+\ref{sec:oigp-prediction}).
 
 \subsection{Constructing occupancy grids}
-\label{sec:occupancy}
+\label{sec:oigp-occupancy}
 To capture the local interactions of an agent with its neighbors, we
 construct an occupancy grid for each agent $i$ at each time-step $t$
 that is similar to the social pooling grid used in \cite{alahi16}. The
@@ -268,7 +249,7 @@ then count the number of surrounding agents within each grid
 cell. Formally, we define occupancy grid as a vector of length $M^2$
 given by,
 \begin{equation}
-  \label{eq:2}
+  \label{eq:oigp-2}
   \Obold_t\supi (a + M(b-1)) = \sum_{j \in \mathcal{N}\supi}\mathbb{I}_{a,b}[x_t\supj - x_t\supi, y_t\supj - y_t\supi].
 \end{equation}
 $\mathcal{N}\supi$ denotes the set of all agents $j \neq i$, who are
@@ -286,7 +267,7 @@ that of all agents, respectively.
 
 %
 \subsection{Preparing training data for learning}
-\label{sec:preprocessing}
+\label{sec:oigp-preprocessing}
 
 %
 %
@@ -308,7 +289,7 @@ that of all agents, respectively.
 Before training our model, we preprocess the training data $\fbold$,
 which correspond to the trajectories of all agents. First, we
 construct occupancy grids $\Obold\supi$ and $\Obold$ along $\fbold$, as described in
-Section \ref{sec:occupancy}. Second, we process all the trajectories
+Section \ref{sec:oigp-occupancy}. Second, we process all the trajectories
 to obtain the velocities of agents at each time-step $(\xvel,
 \yvel)$. Third, since we have access to the entire trajectory at
 training, we can compute the goals of all the pedestrians.  Note that
@@ -318,7 +299,7 @@ have $(\Obold, \xbvel, \ybvel)$ for all agents at every time-step and
 their corresponding goals $\{g\supi\}$.%
 
 \subsection{Training the local interaction model}
-\label{sec:train}
+\label{sec:oigp-train}
 
 To learn across different pedestrians traversing in different regions
 of the environment, we model the velocity of an agent at a specific
@@ -326,7 +307,7 @@ time-step as a function of their intended goal and their occupancy
 grid at that time-step. Formally, we seek to estimate the distribution
 $P(\xbvel| \Obold, g)$ and $P(\ybvel| \Obold, g)$, for each goal $g$
 in $\Gbold$, from the training data obtained in Section
-\ref{sec:preprocessing}.
+\ref{sec:oigp-preprocessing}.
 
 We start by modeling the interactions as a Gaussian Process (GP)
 regression problem, where the noisy data to be interpolated is
@@ -358,7 +339,7 @@ goal and effectively ignore irrelevant cells.
 
 The SE-ARD kernel with additive noise is given by,
 \begin{align}
-  \label{eqn:kernel}
+  \label{eqn:oigp-kernel}
   \begin{split}
     K_{S}(\Obold, \Obold') &= \sigma_f^2 \exp\left(-\frac{1}{2}\sum_{d=1}^{M^2} \frac{(\Obold(d) - \Obold'(d))^2}{\ell_d^2}\right) \\
     &+ \sigma_n^2 \delta(\Obold, \Obold')
@@ -385,7 +366,7 @@ given by,
 %
 
 \begin{align}
-  \label{eqn:logmarginal}
+  \label{eqn:oigp-logmarginal}
   \begin{split}
     \log P\left(\xbvel|\Obold\right) &= -\frac{1}{2}\xbvel^TK_S(\Obold, \Obold)^{-1}\xbvel \\
     &- \frac{1}{2}\log|K_S(\Obold, \Obold)| - \frac{n_g}{2}\log 2\pi
@@ -403,7 +384,7 @@ for all goals $g \in \Gbold$ in a similar fashion.
 %
 
 \subsection{Prediction}
-\label{sec:prediction}
+\label{sec:oigp-prediction}
 
 During prediction we are given an unseen crowd with $N_p$ pedestrians,
 a robot, and their observations $\zbold_{1:t}$ until time $t$. Our
@@ -414,7 +395,7 @@ goals of the pedestrians during prediction. Note that we know the goal
 of the robot $g\supR$ since it is user-defined.
 
 \subsubsection{Infer goal of a pedestrian}
-\label{sec:infer}
+\label{sec:oigp-infer}
 
 Given observations $\zbold\supi\subt$ of pedestrian $i$ until time $t$
 and the set of goals $\Gbold$, we seek to infer the goal
@@ -423,7 +404,7 @@ $P(g\supi)$ over all goals, in the absence of any observations for
 agent $i$ (A more informative prior over the goals can be found by
 analyzing the environment). Hence, we have:
 \begin{equation}
-  \label{eq:1}
+  \label{eq:oigp-1}
   P(g\supi|\zbold\supi\subt) = \frac{P(\zbold\supi\subt|g\supi) P(g\supi)}{P(\zbold\supi\subt)} \propto P(\zbold\supi\subt|g\supi).
 \end{equation}
 
@@ -448,7 +429,7 @@ occupancy grids $\Obold_{1:t-1}$ of all pedestrians at each time-step
 until $t-1$.  For each possible goal $g \in \Gbold$, we take the
 corresponding set of trained hyperparameters $\Theta_x^g$ and
 $\Theta_y^g$, and evaluate the log marginal likelihood of the GP for
-each agent $i$ (using equation \ref{eqn:logmarginal}).
+each agent $i$ (using equation \ref{eqn:oigp-logmarginal}).
 %
 %
 %
@@ -461,13 +442,13 @@ $P(\zbold\subt\supi|g\supi)$ for every goal $g\supi \in \Gbold$.
 
 
 \subsubsection{Predicting future trajectories}
-\label{sec:pred-future-traj}
+\label{sec:oigp-pred-future-traj}
 
 Now that we have a distribution over the goals $g\supi$ for all agents
 $i$ in the crowd, we can use the trained model to predict future
 locations. The joint posterior density can be decomposed as
 \begin{equation}
-  \label{eq:11}
+  \label{eq:oigp-11}
   P(\fbold\supR, \fbold | \zbold\subt) = \sum_{\gbold} P(\fbold\supR, \fbold | \gbold, \zbold\subt) P(\gbold | \zbold\subt)
 \end{equation}
 where $\gbold = \{g\supi\}_{i=R,1:N}$ are the goals of all agents
@@ -479,16 +460,16 @@ each other (and that we know the goal of the robot with certainty)
 given their respective observations. Then, we can write the
 distribution of a goal given a history of observations as:
 \begin{equation}
-  \label{eq:12}
+  \label{eq:oigp-12}
   P(\gbold|\zbold\subt) = \prod_{i=1}^{N} P(g\supi|\zbold\subt\supi)
 \end{equation}
-where $P(g\supi|\zbold\subt\supi)$ is given by equation \ref{eq:1}.
+where $P(g\supi|\zbold\subt\supi)$ is given by equation \ref{eq:oigp-1}.
 We approximate the joint distribution
 $P(\fbold\supR, \fbold|\gbold, \zbold\subt)$ by using the velocities
 and occupancy grids obtained from observations $\zbold\subt$ (as done
-in Section \ref{sec:infer}),
+in Section \ref{sec:oigp-infer}),
 \begin{equation}
-  \label{eq:13}
+  \label{eq:oigp-13}
   %
   %
   %
@@ -512,9 +493,9 @@ $H$ locations of agent $i$ after time $t$, in addition to previous
 locations.
 
 \subsubsection{Multi-step prediction}
-\label{sec:sampling}
+\label{sec:oigp-sampling}
 Future locations can be predicted using the learned model from Section
-\ref{sec:train}. For each agent $i$, we fit a separate pair of GPs
+\ref{sec:oigp-train}. For each agent $i$, we fit a separate pair of GPs
 (with the learned hyperparameters $\Theta_x^g$, $\Theta_y^g$ for goal
 $g$
 %
@@ -532,7 +513,7 @@ occupancy grid at the previous time step using previous
 predictions. Instead of computing the distribution over future
 locations in an exact form (which can be extremely difficult), we use
 Monte Carlo sampling to approximate the distribution as shown in
-Algorithm \ref{alg:sampling}.
+Algorithm \ref{alg:oigp-sampling}.
 
 At time $t+1$, we compute the GP predictive distribution
 \cite{rasmussen06} for each $(\xbvel)_{t+1}\supi$ and
@@ -593,16 +574,16 @@ As we let the value of $S$ grow, we get a better approximation.
     \fbold_{t'}\}_{j=1:S}\}_{t'=t+1:t+H}$\label{alg:line:return}
   \end{algorithmic}
   \caption{Multi-step prediction through Sampling}
-  \label{alg:sampling}
+  \label{alg:oigp-sampling}
 \end{algorithm}
 
 
 
 \section{Evaluation}
-\label{sec:evaluation}
+\label{sec:oigp-evaluation}
 
 \subsection{Setup}
-\label{sec:setup}
+\label{sec:oigp-setup}
 
 We evaluate our model on a publicly available human-trajectory dataset
 released by ETH, \cite{pellegrini09}.
@@ -620,7 +601,7 @@ settings, hundreds of trajectories and high crowd density.
 %
 %
 An example snapshot from the video (with goals marked) is shown in
-figure \ref{fig:snapshot}. Each time-step in the video is six frames
+figure \ref{fig:oigp-snapshot}. Each time-step in the video is six frames
 long and amounts to 0.4 seconds. The average trajectory length of a
 pedestrian is 25 time-steps. The total number of pedestrians in the
 video is 360 and there are four goals in the environment. The
@@ -672,7 +653,7 @@ resembles human-like behavior. A similar evaluation was done in
   \includegraphics[scale=0.4]{Figures/snap-label.png}
   \caption{Example snapshot of the dataset with goals indicated by red
     dots}
-  \label{fig:snapshot}
+  \label{fig:oigp-snapshot}
   \vspace{-15pt}
 \end{figure}
 
@@ -716,23 +697,23 @@ of the pedestrian, we consider two metrics:
 \end{enumerate}
 
 \subsection{Model Parameters}
-\label{sec:model-parameters}
+\label{sec:oigp-model-parameters}
 
 We construct occupancy grids around each agent of size $4 \times 4$ (i.e. $M=4$) covering a space of $80 \times 80$ pixels in the video. In each video, we train the model on the trajectories of the first 50 pedestrians. At prediction time, we chose a scenario with 11 pedestrians (from the remaining part of the video, not used in training), one of whom is used as a robot in our model. We predict the future locations for a range of prediction horizons $H = 1,2,5,10,20$ time-steps. If the path of the pedestrian (or robot) ends in less than $H$ time-steps, we will predict only until the end of his path. For multi-step prediction, we use $S = 100$ samples to approximate the distribution over future locations. We implement the Gaussian process regression model using the GPML toolbox, \cite{rasmussen06}.
 
 
 \subsection{Results}
-\label{sec:results}
+\label{sec:oigp-results}
 
 \begin{figure}[t!]
   \centering
   \includegraphics[scale=0.35]{Figures/igp2-crop.png}
   \caption{Example prediction by our model. For each pedestrian, we predict his future locations (which are plotted) for the next 5 time-steps. The bottom set of pedestrians are progressing towards a goal at the top centre of the image, but they go around the other set of pedestrians making way for them cooperatively}
-  \label{fig:bestcase}
+  \label{fig:oigp-bestcase}
   %
 \end{figure}
 
-To test the prediction accuracy of both approaches, we have chosen scenarios with 11 pedestrians in the crowd where crowd density is high and some pedestrians head into and through the crowd. To get an unbiased estimate, we chose 5 such scenarios in the video. In each scenario, we assume each pedestrian to be the robot, one at a time, and compute their average displacement error and final displacement error, averaged over all time-steps. This results in 11 sets of error values and we compute the average over all sets to give the mean errors over all pedestrians. We repeat the experiment for different $H$ values to get both short-range and long-range prediction accuracies of both approaches. The results are averaged over all 5 scenarios and are presented in Table \ref{table:results}. Note that the errors are listed in pixels.
+To test the prediction accuracy of both approaches, we have chosen scenarios with 11 pedestrians in the crowd where crowd density is high and some pedestrians head into and through the crowd. To get an unbiased estimate, we chose 5 such scenarios in the video. In each scenario, we assume each pedestrian to be the robot, one at a time, and compute their average displacement error and final displacement error, averaged over all time-steps. This results in 11 sets of error values and we compute the average over all sets to give the mean errors over all pedestrians. We repeat the experiment for different $H$ values to get both short-range and long-range prediction accuracies of both approaches. The results are averaged over all 5 scenarios and are presented in Table \ref{table:oigp-results}. Note that the errors are listed in pixels.
 
 \begin{table}[t!]
   \caption{Prediction errors (in pixels) on the dataset for IGP and our approach}
@@ -754,25 +735,25 @@ To test the prediction accuracy of both approaches, we have chosen scenarios wit
     & 20 & 67.41 & 54.2 \\
     \hline
   \end{tabular}
-  \label{table:results}
+  \label{table:oigp-results}
 \end{table}
 
-In Figure \ref{fig:bestcase}, we show an example scene where our approach predicts cooperative behavior. The set of pedestrians going up give way to the set of pedestrians going down. To visualize what our local interaction model (from section \ref{sec:train}) learned, we give it some example occupancy grids and goals, and observe the predicted velocities. Figure \ref{fig:learnedmodel} shows that the model learns collision avoidance as it predicts velocities away from grid cells which are occupied and towards unoccupied grid cells. When an agent's vicinity is heavily populated in the direction of its goal, the magnitude of predicted velocity is very low, i.e., the agent moves slowly. If instead, its vicinity is populated in the opposite direction of its goal, the velocity of the agent doesn't get affected by the surrounding agents (as they are not obstructing its path).
+In Figure \ref{fig:oigp-bestcase}, we show an example scene where our approach predicts cooperative behavior. The set of pedestrians going up give way to the set of pedestrians going down. To visualize what our local interaction model (from section \ref{sec:oigp-train}) learned, we give it some example occupancy grids and goals, and observe the predicted velocities. Figure \ref{fig:oigp-learnedmodel} shows that the model learns collision avoidance as it predicts velocities away from grid cells which are occupied and towards unoccupied grid cells. When an agent's vicinity is heavily populated in the direction of its goal, the magnitude of predicted velocity is very low, i.e., the agent moves slowly. If instead, its vicinity is populated in the opposite direction of its goal, the velocity of the agent doesn't get affected by the surrounding agents (as they are not obstructing its path).
 
-To verify this observation, we have examined the values of the learned hyperparameters of the SE-ARD kernel. The lengthscales for grid cells that are not in the direction of the pedestrian's intended goal, are given high values, thus reducing their relevance in the velocity prediction. For example, in Figure \ref{fig:learnedmodel} the lengthscales for the bottom grid cells in the left bottom occupancy grid, are set to values higher than 7 whereas the lengthscales for the top grid cells in the same grid are set to values lower than 1. This shows that our model learns how neighbors affect a pedestrian's path based on their relative spatial orientation. 
+To verify this observation, we have examined the values of the learned hyperparameters of the SE-ARD kernel. The lengthscales for grid cells that are not in the direction of the pedestrian's intended goal, are given high values, thus reducing their relevance in the velocity prediction. For example, in Figure \ref{fig:oigp-learnedmodel} the lengthscales for the bottom grid cells in the left bottom occupancy grid, are set to values higher than 7 whereas the lengthscales for the top grid cells in the same grid are set to values lower than 1. This shows that our model learns how neighbors affect a pedestrian's path based on their relative spatial orientation. 
 
 \begin{figure}[t!]
   \centering
   \includegraphics[width=0.7\linewidth]{Figures/sample-ogrid.png}
   \caption{Velocities predicted by our trained model for example occupancy grids. In each case, the goal of the pedestrian is right above in the Y-direction. Predicted mean y-velocity is shown in blue and predicted mean x-velocity is shown in red.}
-  \label{fig:learnedmodel}
+  \label{fig:oigp-learnedmodel}
   \vspace{-15pt}
 \end{figure}
 
 \section{Discussion}
-\label{sec:discussion}
+\label{sec:oigp-discussion}
 
-From the results presented in Table \ref{table:results}, we can
+From the results presented in Table \ref{table:oigp-results}, we can
 observe that our approach performs better than IGP at predicting human
 trajectories for longer prediction horizons and worse for shorter
 horizons. This is mainly because IGP models trajectories directly by
@@ -802,12 +783,12 @@ non-socially compliant and reactive behavior.
 
 Upon careful examination of predictions of our approach in crowded
 scenarios, we observed that it learns the behavior of slowing down
-(see bottom right of Figure \ref{fig:learnedmodel}) when its vicinity
+(see bottom right of Figure \ref{fig:oigp-learnedmodel}) when its vicinity
 is heavily populated, which is a common behavior among humans. Also,
 as observed from the values of the learned lengthscales for the SE-ARD
 kernel, our model learns how humans decide their velocity based on the
 relative spatial configuration of other agents in their
-neighborhood. As shown in Figure \ref{fig:learnedmodel}, our trained
+neighborhood. As shown in Figure \ref{fig:oigp-learnedmodel}, our trained
 local interaction model captures collision avoidance based on an
 agent's occupancy grid by learning from human trajectory data without
 any hand-crafted potential term.
@@ -816,7 +797,7 @@ Although we present results for predicting trajectories of every
 agent in the crowd, this approach can be extended to robot navigation by
 treating the robot as an agent in the crowd. Planning the path of the
 robot in this model reduces to inference in the joint density as shown
-in Section \ref{sec:planning}. The resulting path taken by the robot
+in Section \ref{sec:oigp-planning}. The resulting path taken by the robot
 is the most likely path predicted according to the learned
 model. Recent work by \cite{pfeiffer16} has shown that as long as
 pedestrians interact with the robot naturally (as one of them), such
@@ -825,7 +806,7 @@ reactive approach.
 
 
 \section{Conclusion and Future Work}
-\label{sec:conclusion}
+\label{sec:oigp-conclusion}
 
 In this work, we present a new approach to modeling cooperative
 behavior among humans in dense crowds. While most existing approaches

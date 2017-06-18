@@ -1,56 +1,55 @@
-\note{Adapt the survey previously written into this chapter. Also cover some of the more recent papers published in this area.} \\
 In this chapter, we present a brief survey of past literature in the domain of robot navigation in human crowds. To address this problem, these works either assume or construct a model of human motion which is used to predict future trajectories. Given these predictions, they then proceed to plan the path for the robot to navigate through the crowd to its destination. Thus, the efficacy of these approaches depend on the accuracy of their human future trajectory predictions and robot path planning algorithms. As a part of this survey, we will present these aspects of the approaches in the context of our problem.
 
 There has been a diverse set of works over the past two decades that have tackled the problem of robot navigation in human crowds. These approaches make varied assumptions, have different objectives and exhibit a wide range of results. We try to broadly classify these approaches according to their methodology, and highlight the benefits and drawbacks. More specifically, we will categorize the approaches based on their modeling assumptions and their planning objective. For each category, a brief description of the employed methodology is discussed in addition to its advantages and disadvantages. The intent of this chapter is to present the landscape of past research in this field to give some perspective and context to our proposed work presented in the coming chapters.
 
 \section{Taxonomy of Approaches}
-\label{sec:taxonomy-approaches}
+\label{sec:survey-taxonomy-approaches}
 
 We broadly classify past works on the basis of their (1) objective of the planning algorithm, and (2) human motion model to predict future trajectories. The resulting classes are described in the following subsections.
 
 \subsection{Planning Objective}
-\label{sec:planning-objective}
+\label{sec:survey-planning-objective}
 Planning the robot's path through the crowd involves several constraints that need to be satisfied. Collision-avoidance, dynamic feasibility and socially-compliant are some such constraints that typical path planning algorithms consider. Collision-avoidance is self-explanatory in that it needs the robot to move such that it avoids collision with any human in the crowd. Dynamic feasibility implies that the path planned needs to be feasible for the robot to execute with its dynamics and motion model. In contrast, social compliance is a complex constraint that is hard to rigidly define. In broad terms, it implies that the resulting path for the robot needs to adhere to social norms followed by humans, thus making the path interpretable and predictable for humans in the crowd. Given these constraints, we can broadly classify past works as,
 
 \subsubsection{Safe Robot Navigation}
-\label{sec:safe-robot-navig}
+\label{sec:survey-safe-robot-navig}
 
 The objective of these set of works involve the task of navigating a robot safely through a human crowds avoiding collisions and planning a dynamically-feasible path. As a result, these works do not consider the social aspects of navigation and hence, the resulting path of the robot may not be ``human-like'' (but it is safe).
 
 \subsubsection{Social Robot Navigation}
-\label{sec:soci-robot-navig}
+\label{sec:survey-soci-robot-navig}
 
 These works tackle the more difficult objective of not only safe robot navigation (as above), but also to move in a socially compliant way. Thus, the resulting robot paths are more predictable for the surrounding humans in the crowd.
 
 \subsubsection{Trajectory prediction}
-\label{sec:traj-pred}
+\label{sec:survey-traj-pred}
 
-The set of works in this class do not necessarily involve robot navigation, but rather tackle the problem of accurately modeling human trajectories in crowds. As shown in section \ref{sec:intro-planning-as-inference}, planning the path for the robot reduces to inference in this model, thereby obtaining a path for the robot that is ``human-like'' or socially-compliant. Most of the works in this category are from the domain of video surveillance tracking and computer vision.
+The set of works in this class do not necessarily involve robot navigation, but rather tackle the problem of accurately modeling human trajectories in crowds. As shown in section \note{sec:intro-planning-as-inference}, planning the path for the robot reduces to inference in this model, thereby obtaining a path for the robot that is ``human-like'' or socially-compliant. Most of the works in this category are from the domain of video surveillance tracking and computer vision.
 
 
 
 \subsection{Human Motion Model}
-\label{sec:human-motion-model}
+\label{sec:survey-human-motion-model}
 
 For robots to navigate human crowds, they need to employ a model of human motion in crowds so that accurate predictions of their future trajectories can be made. These predictions are then fed into a planning algorithm to plan the final trajectory for the robot to follow to navigate through the crowd. We can broadly classify past works based on the human motion model employed as,
 
 \subsubsection{Independent Handcrafted Model (IH)}
-\label{sec:indep-handcr-model}
+\label{sec:survey-indep-handcr-model}
 
 These approaches model each agent (or human) in the crowd independently of each other, i.e. they assume that the predictions for human trajectories are mutually independent. In addition to this assumption, the motion model is handcrafted (like a rule-based model) to match social behavior usually observed in crowds.
 
 \subsubsection{Independent Trained Model (IT)}
-\label{sec:indep-train-model}
+\label{sec:survey-indep-train-model}
 
 Similar to the IH category, works in this class make the independence assumption but the model, instead of being handcrafted, is learned by training it on real-world human trajectory data.
 
 \subsubsection{Joint Handcrafted Model (JH)}
-\label{sec:joint-handcr-model}
+\label{sec:survey-joint-handcr-model}
 
 Unlike the independent models, these works assume that the predictions are dependent on each other and jointly predict the trajectories of all interacting humans in the crowd. Most of these approaches don't model the joint distribution of trajectories explicitly, instead use some approximate handcrafted potential terms to capture the interactions.
 
 \subsubsection{Joint Trained Model (JT)}
-\label{sec:joint-trained-model}
+\label{sec:survey-joint-trained-model}
 
 Similar to the JH class of works, these approaches jointly predict the trajectories of all humans in the crowd but the joint distribution is learned from real-world human trajectory data, and the learned model is used at inference time to make predictions. \\
 
@@ -77,15 +76,65 @@ In each of the categories in the above taxonomy, there are several related works
 \end{table}
 
 \section{Safe Robot Navigation}
-\label{sec:safe-robot-navig-1}
+\label{sec:survey-safe-robot-navig-1}
+
+As described in the above section, the objective of these works are to navigate a robot through human crowds avoiding collisions and satisfying dynamic feasibility. Early works have dealt with this problem by using traditional handcrafted human motion models to obtain predictions for future trajectories. Most of these models make the simplistic assumption that motion of agents are independent of each other, except in close quarters where handcrafted potential terms predict collision-avoidance.
+
+\cite{hoeller2007accompanying} employs a laser-based tracker to track humans in the crowd and combines the estimates with a potential field-based model to predict their future motion. These models have handcrafted quadratic repulsive potential terms that result in predictions that avoid obstacles and linear attractive potential terms that steer the predictions towards destination. These potentials are a function of the distances to other humans, obstacles and destination. Given these predictions of future trajectories, the path of the robot is planned using a variant of Expansive space trees (EST), \cite{hsu02}.
+
+The potential field-based model captures simplistic human-space interactions such as obstacle avoidance, and works well in wide open spaces. The linear attractive potential terms capture the intent of the human to go towards the destination, but require the knowledge of the true destination of every human in the crowd. Although they are capable of modeling obstacle avoidance, they fail at accurately capturing complex human-human interactions like cooperation. Another major drawback of such approaches is due to the independence assumption that doesn't account for the effect of robot's actions on the human trajectories.
+
+On the other hand, \cite{aoude2013probabilistically} uses similar independent human motion models but learned from real pedestrian data, rather than using handcrafted potential terms. The learned models are used to forecast future trajectories for humans in the crowd. More specifically, \cite{aoude2013probabilistically} use Gaussian Processes (GP) to learn independent models of motion patterns of humans in real crowds. The future trajectories are grown using a variant of RRT to follow the motion pattern. Chance-constrained RRT, \cite{luders10}, is used to plan the robot's path guaranteeing probabilistic robustness to predicted human paths. The GP model is trained on human trajectories from real annotated crowd data.
+
+Learning motion patterns from data enables \cite{aoude2013probabilistically} to result in predictions that capture several navigation behaviors. By combining GPs and RRTs, it has a run-time that is suitable for real-time operation. Chance-constrained RRT, used in planning the path of the robot, guarantees probabilistically safe trajectories for the robot in the presence of humans. But the motion patterns modeled account for each individual human individually and do not capture human-human interactions. In dense crowds, where such interactions play a major role such a model would result in inaccurate predictions.
+
+More recently, there have been several works which move away from the independence assumption and model the future trajectories of all interacting agents as a joint distribution. As a result, these works can capture human-human interactions within the crowd. \cite{trautman2015robot} introduced \textit{Interacting Gaussian Processes} (IGP), which uses GPs to model individual trajectories of the pedestrians (and the robot) and couples their predictions using a handcrafted interaction potential term that aims to capture joint behaviors, such as cooperative collision avoidance. The robot's path is chosen as the MAP assignment to the modeled joint distribution (similar to \note{sec:intro-planning-as-inference}).
+
+The handcrafted interaction potential term explicitly assigns low probability mass to predictions that result in human-human and human-robot collisions, thus capturing joint collision avoidance. One important contribution of this work is that since the robot is part of the joint model, it also accounts for human-robot cooperation which was lacking in previous works. A major drawback of such an approach is the hand-tuned potential term that doesn't generalize across different environments and crowd settings.
+
+To account for this drawback, one needs to learn the joint distribution from real-world crowd data without using hand-tuned potential terms. \cite{kim2014brvo} introduced an online motion prediction method that learns per-agent motion models as the robot moves, with no prior knowledge of the environment. The prediction algorithm extends the reciprocal velocity obstacles approach, \cite{van2008reciprocal}, which captures joint collision avoidance among pedestrians. Given the predictions, the robot plans its own path using generalized velocity obstacles method, \cite{wilkie2009generalized}.
+
+By learning individual motion model for each observed pedestrian, the online motion-prediction model can perform better than less responsive offline motion models. But the reciprocal velocity obstacles approach can only capture collision avoidance behavior and not cooperative behavior that is commonly observed in crowds. Also, the predictions are accurate only for short-term horizons and worsen over longer horizons.
+
 
 \section{Social Robot Navigation}
-\label{sec:soci-robot-navig-1}
+\label{sec:survey-soci-robot-navig-1}
+
+Works in this category tackle the problem of coming up with socially-compliant paths in addition to safe and dynamic-feasibility. Social compliance implies that the resulting paths are predictable for surrounding humans in the crowd, which can be a difficult to define as an objective. Early works in this domain use rule-based systems which try to capture social norms that are typically observed in crowds.
+
+\cite{kirby2009companion} presents an approach that tracks surrounding humans and uses the estimate of their current velocity to predict future locations. Pre-defined social conventions such as person avoidance, personal space, pass on the right, keeping a constant velocity etc. are encoded as social constraints on the robot's path. Given these constraints, A* is used to plan the robot's path. Since social norms such as passing on right and respecting personal space are explicitly encoded into the planning, the resulting path has social compliance respecting such behaviors. On the other hand, the constant velocity assumption used in human motion prediction doesn't hold true in real crowds and the pre-defined social conventions are specific to office hallways, not for general settings.
+
+Rather than using these handcrafted rules to define social conventions, \cite{kim2016socially} learns social behaviors from human demonstrated crowd navigation behavior. They employ Bayesian inverse reinforcement learning (IRL), \cite{Ramachandran2007BayesianIR}, to learn a cost function from human demonstrations obtained by tele-operating the robot in a real crowd. The features used to characterize this cost function are pedestrian speed, direction of his motion, local crowd density and distance to goal, and these are extracted from raw RGB-D sensor data. A low-level local path planner is used to optimize the cost function and plan an optimal path for the robot.
+
+As the cost function is learned from human demonstrations, the robot learns to navigate in a socially compliant way and is generalizable to new environments. A reactive planner is used to account for any uncertainty regarding the pedestrian motion, which replans every time new sensor data is obtained. The major drawback of this approach is that future motions of the humans are independent of each other and hence, cannot capture human-human and human-robot interactions.
+
+As argued before, to capture these interactions we need to model the joint distribution of the trajectories. \cite{shiomi2014towards} approximates this distribution by using a variant of the social forces model, \cite{helbing95}, which describes the interactions in terms of forces that correspond to objectives. Attractive forces guide the pedestrians towards their goal whereas repulsive forces ensure that collisions are avoided. These forces are a function of positions and speeds of the pedestrians. Given the predictions, the robot's path is planned using a local reactive planner.
+
+In sparse crowds, approaches such as \cite{shiomi2014towards} that employ the social forces model have been shown to result in socially compliant paths. But in dense crowds, social force models fail as they can only capture simple interactions like attraction or repulsion and not complex crowd behavior such as cooperation. This restricts the applicability of such approaches in dense crowds.
+
+\cite{kretzschmar2016socially} learns parameters of a joint distribution model over all interacting agents using Maximum Entropy IRL, \cite{Ziebart2008MaximumEI}, from human demonstrations. The features used include acceleration, velocity, clearance, collision-avoidance, passing left vs right, group behavior etc. During prediction, they explicitly account for interactions between humans, and predict the future paths of both the humans and the robot jointly. Since the cost function is learned from real crowd data and the future paths are jointly predicted, this approach can capture interactions that are commonly seen in dense crowds resulting in socially compliant path for the robot. Interestingly, the model also learns cooperative behavior between the humans and the robot. The only drawback is that the dimensionality of the feature vector scales with the number of agents in the crowd making the approach scale poorly with the size of the crowd.
 
 \section{Trajectory Prediction}
-\label{sec:traj-pred-2}
+\label{sec:survey-traj-pred-2}
 
+In this section, we will discuss works in the domain of video surveillance tracking and human trajectory prediction in crowds. These works are relevant as predicting trajectories of surrounding humans accurately is highly important to the task of navigation through crowds. Given such an accurate prediction model, we can plan the path of the robot using the same model to obtain socially-compliant paths that are ``human-like''. 
 
+Some of the works such as \cite{joseph2011bayesian} learn independent human motion prediction models by modeling motion patterns of pedestrians in real crowds. These motion patterns are modeled using GPs to regress over their $(x,y)$ positions and a Dirichlet process (DP) to account for the unknown number of motion patterns. Activity forecasting introduced in \cite{kitani2012activity}, on the other hand, infers traversable regions in a scene by modeling human-space interactions using semantic scene information. The traversability is defined through a cost function that is learned using Maximum Entropy IRL, \cite{Ziebart2008MaximumEI}, over the static semantic environment map from human trajectories.
+
+Approaches that model motion patterns of pedestrians in environments capture human navigation behaviors and implicitly model environmental constraints on human motion (such as a static obstacle in the environment, that pedestrians avoid). Similarly, approaches like \cite{kitani2012activity} that explicitly model human-space interactions can learn more refined constraints on the motion according to the semantic objects in the environment. Unfortunately, both these sets of approaches don't account for human-human interactions i.e. they model each human independently of each other. Hence, they cannot capture cooperation or high-level social behavior among humans in the crowd.
+
+As we already know, to account for human-human interactions we need to jointly predict the trajectories of all interacting agents in the crowd. \cite{luber2010people} presented a pedestrian dynamics model based on Social Forces, \cite{helbing95}, that integrates the social forces model with a Kalman filter based multi-hypothesis tracker. The resulting model accounts for both inter-person influences and influences from static obstacles (using an occupancy map) in the environment. Thus, the trajectory predictions are accurate for humans in real crowds. One of the several drawbacks of such an approach, as discussed in the previous section, is that the use of social forces model has been shown to be effective only in sparse crowds and not in dense crowds. This makes it not readily applicable for any crowd scenario. Another important drawback of the model is that, as it doesn't infer the destination of the pedestrian, its long term prediction accuracy is low (Note that attractive forces that guide the pedestrian to the destination, which are a part of social forces, aren't used in this approach).
+
+More recently, there have been approaches that learn a joint distribution over future trajectories of all interacting agents from real crowd data, rather than using handcrafted potential terms or forces. \cite{pellegrini2010improving} introduces a third order conditional random field (CRF) based approach to model the joint distribution of trajectories. The CRF-based approach is also able to identify groups within crowds on the basis of past trajectories. The parameters of the CRF are learned by training the model on annotated crowd datasets with very dense crowds. Taking a similar approach, \cite{alahi16} presents a LSTM-based approach that learns a deep recurrent generative model of the joint distribution accounting for interactions and short-term intentions. Given the past trajectories of all agents, this model couples their predictions through a social pooling layer that combines the hidden states of neighboring pedestrians.
+
+These joint data-driven approaches perform well in real world dense crowd trajectory prediction tasks and capture important social aspects such as cooperation, joint collision avoidance and group memberships. Two important drawbacks of this approach are, (1) the human-space interactions, such as static obstacle avoidance, are not included in the model, and (2) they work only for short horizons as they are aimed to model interactions rather than achieve accurate long term predictions.
+
+\section{Summary}
+\label{sec:survey-summary}
+
+In this chapter, a brief survey of past literature in the domain of navigation and trajectory prediction in human crowds is presented. Approaches ranging from independent modeling with rule-based models to joint modeling using deep recurrent networks have been discussed along with their applicability and shortcomings. The intent of this chapter is to get a better understanding of the work that has been done and how that leads up to the work presented as a part of this thesis.
+
+In the next chapter, Chapter \ref{chap:ppad}, we present a novel planning algorithm that enables robots to navigate crowded dynamic environments where the path of the dynamic obstacle is known. Such an algorithm can be used on a robot to re-plan its path upon receiving new sensory information and subsequent dynamic obstacle trajectory predictions. The problem of predicting the trajectory (especially, that of humans in crowds) is tackled in Chapter \ref{chap:oigp}, where we present a statistical model that, given the past trajectories, predicts future trajectories accurately for long horizons.
 
 %%% Local Variables:
 %%% mode: latex

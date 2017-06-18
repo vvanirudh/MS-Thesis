@@ -17,13 +17,13 @@ Following this insight, we consider the time dimension only in those regions whe
 
 Given a path planning problem in a high dimensional space, it is possible to find an optimal solution through a complete search. For example, heuristic-based A* variant algorithms exist that are guaranteed to find an optimal solution~\cite{silver2005cooperative}. Because these algorithms rely on low-dimensional heuristics, search can be counter-intuitive.  
 
-Consider the example shown in Figure \ref{fig:motivation}, where the resulting path (dash-dot path), in the absence of the dynamic obstacle (disc), is towards the heuristic. But, in the presence of the dynamic obstacle, this path is in collision and cannot be executed. Hence, we need to come up with the alternative path (dashed path), which is against the heuristic. Heuristic-based A* would expand a large number of states and will take a long time to generate the new path whereas our approach generates the alternative path quickly, because it plans in a lower dimensional space.
+Consider the example shown in Figure \ref{fig:ppad-motivation}, where the resulting path (dash-dot path), in the absence of the dynamic obstacle (disc), is towards the heuristic. But, in the presence of the dynamic obstacle, this path is in collision and cannot be executed. Hence, we need to come up with the alternative path (dashed path), which is against the heuristic. Heuristic-based A* would expand a large number of states and will take a long time to generate the new path whereas our approach generates the alternative path quickly, because it plans in a lower dimensional space.
 
 \begin{figure}[tb!]
 \centering%
 \includegraphics[width=0.7\linewidth]{Figures/intro.eps}%
 \caption{Example of a dynamic environment where the heuristic leads the robot (blue square) into collision (on blue dash-dot path) with the dynamic obstacle (red disc). We need to find an alternate path (green dashed path) from A to B without expanding a large number of states.}%
-\label{fig:motivation}
+\label{fig:ppad-motivation}
 \end{figure}
 
 More generally, we observe that substantial sections of paths found are not in collision with any dynamic obstacles, implying that we need not consider the time dimension in such regions. We can obtain quicker planning times by planning in low dimensional state-space for those regions and in full dimensional state-space only where it is necessary to reason about a potential collision with an obstacle. 
@@ -84,18 +84,18 @@ We describe the adaptive dimensionality approach used for path planning in dynam
 
 \subsection{Adaptive Dimensionality for Dynamic Environments}
 Our approach follows the algorithm for planning with adaptive dimensionality introduced in~\cite{gochev2011path}.
-Following their notation, the target problem in Section~\ref{sec:problem} can be rewritten as follows.
+Following their notation, the target problem in Section~\ref{sec:ppad-problem} can be rewritten as follows.
 Graph $G$ is substituted with the adaptive-dimensionality graph $G^{ad} = (S^{ad}, T^{ad})$. $G^{ad}$ is constructed from two graphs: a high dimensional graph $G^{hd} = (S^{hd}, T^{hd})$ with dimensionality $h$ and a low dimensional graph $G^{ld} = (S^{ld}, T^{ld})$ with dimensionality $l$. The state-space $S^{ld}$ is a projection of $S^{hd}$ onto a lower dimensional manifold ($ h \textgreater l$) through a projection function:
 \begin{equation}
 \lambda : S^{hd} \rightarrow S^{ld}
-\end{equation}\label{eq:lambda}
+\end{equation}\label{eq:ppad-lambda}
 Similarly, an inverse projection function $\lambda^{-1} : S^{ld} \rightarrow \mathcal{P}(S^{hd})$ is defined to map low-dimensional states to the set of all their high-dimensional pre-images,where $\mathcal{P}(S^{hd})$ denotes the power set of $S^{hd}$.
 
 Both state spaces $S^{hd}$ and $S^{ld}$ can have their own transition sets $T^{hd}$ and $T^{ld}$,
 with a constraint that transitions in a high-dimensional space are more expensive than the corresponding transitions in a low-dimensional space, that is for every pair of states $X_i$ and $X_j$ in $S^{hd}$,
 \begin{equation}
 c(\pi^*_{G^{hd}}(X_i,X_j)) \geq c(\pi^*_{G^{ld}}(\lambda(X_i), \lambda(X_j)))
-\label{eq:cost}
+\label{eq:ppad-cost}
 \end{equation}
 We note that this constraint is important for bounding the suboptimality that will be discussed later in Section~\ref{sec:ppad-theory}.
 
@@ -140,7 +140,7 @@ We note that this constraint is important for bounding the suboptimality that wi
   \end{subfigure}
 
   \caption{Example run of the algorithm on a sample map. HD regions are indicated by blue circles, paths of dynamic obstacles by red lines and path found using our approach by green line.}
-  \label{fig:alg}
+  \label{fig:ppad-alg}
 \end{figure*}
 
 In our target problem of planning in a dynamic environment,
@@ -148,7 +148,7 @@ the low-dimensional state-space $S^{ld}$ consists of only spatial state variable
 For any high dimensional state $X^{hd} \in S^{hd}$, we will use the notation $t(X^{hd})$ to denote the value of time dimension associated with that state. 
 
 The projection function $\lambda$ projects the high-dimensional state $X^{hd}$ to a low-dimensional state $X^{ld}$ with only the spatial variables. 
-If we follow the original definition of $\lambda$ in Equation~\ref{eq:lambda} then, for a given low-dimensional state $X^{ld}$, the inverse projection function $\lambda^{-1}$ would map state $X^{ld}$ to the set of all $X^{hd}$ where the spatial configuration of $X^{hd}$ is the same as $X^{ld}$ and $0 \leq t(X^{hd}) \leq T$. 
+If we follow the original definition of $\lambda$ in Equation~\ref{eq:ppad-lambda} then, for a given low-dimensional state $X^{ld}$, the inverse projection function $\lambda^{-1}$ would map state $X^{ld}$ to the set of all $X^{hd}$ where the spatial configuration of $X^{hd}$ is the same as $X^{ld}$ and $0 \leq t(X^{hd}) \leq T$. 
 Thus, for each low-dimensional state, there are $T$ corresponding high-dimensional states, which is quite a large number as $T$ is usually a high value. 
 
 Here, we introduce a pruning technique based on an observation that not all of high-dimensional states are reachable from the start state. For example, consider a low-dimensional state $X \in S^{ld}$ which is mapped to $T$ high-dimensional states. If the time-optimal path from start to this state, ignoring dynamic obstacles, reaches at time $t_f$ then all the states $X^{hd}$ with $\lambda(X^{hd}) = X$ and $t(X^{hd}) < t_f$ are essentially unreachable and hence, can be pruned away from the search space. 
@@ -170,7 +170,7 @@ Note that we can check for collisions with any dynamic obstacle only in the high
 
 \iffalse
 Just as in \cite{gochev2011path}, we require that the costs of the transitions be such that for every pair of states $X_i$ and $X_j$ in $S^{hd}$,
-\begin{equation}\label{eq:cost}
+\begin{equation}\label{eq:ppad-cost}
 c(\pi_{G^{hd}}^*(X_i,X_j)) \geq c(\pi_{G^{ld}}^*(\lambda(X_i),\lambda(X_j)))
 \end{equation}
 where $t(X_j) \geq t(X_i)$. That is, we require that the cost of a least cost path between any two states in $G^{hd}$ to be at least the cost of a least-cost path between their images in $G^{ld}$.
@@ -198,7 +198,7 @@ We start with $G^{ad}$ same as $G^{ld}$ and a high-dimensional region added at t
 
 {\bf Tracking phase.} If a path is found, then in the tracking phase, a high-dimensional tunnel $\tau$ is constructed around the path $\pi_{G^{ad}}^*$ and searched for the least-cost path $\pi_\tau^*(X_S, X_G^{hd})$ where $X_G^{hd} \in \lambda^{-1}(X_G)$. The tunnel is constructed by projecting all the states within to their high-dimensional counterparts. Notice that since the tunnel is entirely high-dimensional and is a subgraph of $G^{hd}$, we consider dynamic obstacles in the entire tunnel and hence, the path found is guaranteed to be feasible and collision-free. If a path $\pi_\tau^*$ is found and its cost is less than $\epsilon_{track}*c(\pi_{G^{ad}}^*)$, then it is returned as the solution by the algorithm and the algorithm terminates. If no path is found, then we identify the farthest location in the tunnel until which the planner has progressed (i.e. the path with most progress), introduce a high-dimensional region there and move onto next iteration. If a path is found and its cost is greater than $\epsilon_{track}*c(\pi_{G^{ad}}^*)$, then we identify the location where the largest cost discrepancy (cost difference) between the path $\pi_\tau^*$ and $\pi_{G^{ad}}^*$ is observed and a high-dimensional region is introduced there. In both cases, if we identify a location which is already high-dimensional, then the size of the high-dimensional region at that location is increased.
 
-{\bf Graph updating phase.} The algorithm re-constructs $G^{ad}$ based on the new high-dimensional regions introduced and moves onto the next iteration of planning and tracking, and keeps repeating until it finds a feasible, collision-free path or returns that there is no such path. An example run of the algorithm is shown in Figure \ref{fig:alg}. The algorithm is presented in Algorithm \ref{alg:adplanning}.
+{\bf Graph updating phase.} The algorithm re-constructs $G^{ad}$ based on the new high-dimensional regions introduced and moves onto the next iteration of planning and tracking, and keeps repeating until it finds a feasible, collision-free path or returns that there is no such path. An example run of the algorithm is shown in Figure \ref{fig:ppad-alg}. The algorithm is presented in Algorithm \ref{alg:ppad-adplanning}.
 
 
 % Algorithm
@@ -233,7 +233,7 @@ We start with $G^{ad}$ same as $G^{ld}$ and a high-dimensional region added at t
 \EndLoop
 \end{algorithmic}
 \caption{Planning with AD in dynamic environments}
-\label{alg:adplanning}
+\label{alg:ppad-adplanning}
 \end{algorithm}
 
 \section{Theoretical Properties}
@@ -250,7 +250,7 @@ Hence, the path found in the tunnel $\pi_\tau^*$ is guaranteed to be collision-f
 \textbf{Proof} If no path is found at the end of a iteration, we introduce either a new high-dimensional region or increase the size of an existing one. As the time dimension is bounded above by $T$, we have a finite state-space. Hence, in the worst scenario, after a finite number of iterations $G^{ad}$ will be the same as $G^{hd}$ and the algorithm will either terminate with a feasible path or return that there is no feasible, collision-free path. \QEDB \\\\
 \iftrue
 \textbf{Theorem 5.4} \textit{If a path $\pi(X_S, X_G^{hd})$ is found at the time of termination, its cost is no more than $\epsilon_{plan}*\epsilon_{track}*c(\pi_{G^{hd}}^*(X_S,X_G^{hd}))$ where $\pi_{G^{hd}}^*(X_S,X_G^{hd})$ is the optimal least-cost path in $G^{hd}$.} \\
-\textbf{Proof} We obtain this bound using equation \ref{eq:cost} and the proof is similar to that of the AD approach. For this proof, we refer the reader to \cite{gochev2011path}. \QEDB 
+\textbf{Proof} We obtain this bound using equation \ref{eq:ppad-cost} and the proof is similar to that of the AD approach. For this proof, we refer the reader to \cite{gochev2011path}. \QEDB 
 \fi
 \iffalse
 \textbf{Theorem 5.4} \textit{In case of cost function equal to time, if a path $\pi(X_S, X_G^{hd})$ is found at the time of termination, its cost is no more than $\epsilon_{plan}*\epsilon_{track}*c(\pi_{G^{hd}}^*(X_S,X_G^{hd}))$ where $\pi_{G^{hd}}^*(X_S,X_G^{hd})$ is the optimal least-cost path in $G^{hd}$.} \\
@@ -282,10 +282,10 @@ We used a set of 16-discretized values for the heading angle and a maximum value
     \caption{Indoor environment}
   \end{subfigure}
   \caption{Example maps, with paths (green) of dynamic obstacles shown, used in our experiments. Static obstacles are shown in yellow and free space in blue.}
-  \label{fig:env}
+  \label{fig:ppad-env}
 \end{figure}
  
-We compared our algorithm to the baseline 4D HCA* planner on several different environment sizes. In small environments with a few hundred cells along each spatial dimension, the baseline planner comes up with the plan quickly, so there is no advantage from our approach. In very large environments with more than 4000 cells along each spatial dimension, the baseline planner runs out of memory to find a solution, while our approach, since it deals with a low-dimensional state-space, was still able to plan successfully. To effectively compare the two approaches at the same level, we chose a moderate environment size of 2500 cells along each spatial dimension and generated 50 maze-like random environments like the one shown on the left in Figure \ref{fig:env}. We also generated 50 random indoor environments of the same size like the one shown on the right in Figure \ref{fig:env}. These indoor environments are composed of a series of narrow hallways and rooms on a grid placed randomly, while the maze-like environments are composed of a series of walls with small gaps in them to allow the robot to pass through.
+We compared our algorithm to the baseline 4D HCA* planner on several different environment sizes. In small environments with a few hundred cells along each spatial dimension, the baseline planner comes up with the plan quickly, so there is no advantage from our approach. In very large environments with more than 4000 cells along each spatial dimension, the baseline planner runs out of memory to find a solution, while our approach, since it deals with a low-dimensional state-space, was still able to plan successfully. To effectively compare the two approaches at the same level, we chose a moderate environment size of 2500 cells along each spatial dimension and generated 50 maze-like random environments like the one shown on the left in Figure \ref{fig:ppad-env}. We also generated 50 random indoor environments of the same size like the one shown on the right in Figure \ref{fig:ppad-env}. These indoor environments are composed of a series of narrow hallways and rooms on a grid placed randomly, while the maze-like environments are composed of a series of walls with small gaps in them to allow the robot to pass through.
 
 In each of these environments, we randomly generate 30 dynamic obstacles. Each dynamic obstacle could come in a large or small size, randomly chosen, and started at a random configuration in the environment. To generate the trajectory for a dynamic obstacle, random goals were chosen and 2D A* is used to generate the paths between the goal points. We chose the start and goal configuration for each dynamic obstacle so that the resulting path is long enough, ensuring that they cover a significant area of the environment. In the indoor environments, the large dynamic obstacles fill the entire width of the hallways, so there is no way to pass them while the narrow dynamic obstacles fill half the width of the hallway, so they can be passed. In the maze-like environments, the dynamic obstacles traverse through the small gaps that the robot tries to pass through, resulting in congestion at such gaps. For each set of environments, we execute two sets of runs - one with 10 dynamic obstacles in each environment and the other with an additional 20 dynamic obstacles (making it a total of 30 moving obstacles) in each environment.
 
@@ -317,7 +317,7 @@ Adaptive & 50 & 2.0 & 18.4 & 39.2 & 16029 & 42418 & 23193 & 62865 & 60050 & 1714
 \end{tabular}
 
 \caption{Results on 50 indoor environments with 10 dynamic obstacles.}
-\label{tab:indoor-10}
+\label{tab:ppad-indoor-10}
 \end{table*}
 
 
@@ -345,7 +345,7 @@ Adaptive & 46 & 2.0 & 18.5 & 26.6 & 16000 & 31148 & 13672 & 21383 & 57760 & 1945
 \end{tabular}
 
 \caption{Results on 50 indoor environments with 30 dynamic obstacles.}
-\label{tab:indoor-30}
+\label{tab:ppad-indoor-30}
 \end{table*}
 
 \begin{table*}[t]
@@ -371,7 +371,7 @@ Adaptive & 48 & 2.0 & 12.6 & 16.6 & 11771 & 13531 & 25630 & 34279 & 537873 & 897
 \end{tabular}
 
 \caption{Results on 50 maze-like environments with 10 dynamic obstacles.}
-\label{tab:maze-10}
+\label{tab:ppad-maze-10}
 \end{table*}
 
 \begin{table*}[t]
@@ -397,7 +397,7 @@ Adaptive & 48 & 2.0 & 22.9 & 36.2 & 18922 & 22002 & 44550 & 107434 & 538370 & 92
 \end{tabular}
 
 \caption{Results on 50 maze-like environments with 30 dynamic obstacles.}
-\label{tab:maze-30}
+\label{tab:ppad-maze-30}
 \end{table*}
 \section{Results}
 \label{sec:ppad-results}
@@ -405,9 +405,9 @@ For both sets of environments, we compare the planning time, number of high-dime
 
 
 
-Tables \ref{tab:indoor-10} and \ref{tab:indoor-30} present the results for 50 randomly generated indoor environments with 10 and 30 dynamic obstacles respectively. In these environments, the low-dimensional heuristic used is very often misleading as it cannot account for dynamic obstacles and leads the search into a blocked hallway. For $\epsilon=1.1$, the planning problem is hard and the baseline could solve only 5 environments with 30 dynamic obstacles (7 in the case of 10 dynamic obstacles). In comparison, our approach could solve 41 of the 50 environments with 30 dynamic obstacles (49 in the case of 10 dynamic obstacles) with a substantially smaller mean planning time. As the $\epsilon$ value increases, the planning problem becomes easier and performance of the baseline approach improves. Even in these easier cases, our approach has a comparable performance, if not better than that of baseline. Results across tables \ref{tab:indoor-10} and \ref{tab:indoor-30} show that our approach performs well even when the number of obstacles increases, whereas the performance of baseline degrades substantially.
+Tables \ref{tab:ppad-indoor-10} and \ref{tab:ppad-indoor-30} present the results for 50 randomly generated indoor environments with 10 and 30 dynamic obstacles respectively. In these environments, the low-dimensional heuristic used is very often misleading as it cannot account for dynamic obstacles and leads the search into a blocked hallway. For $\epsilon=1.1$, the planning problem is hard and the baseline could solve only 5 environments with 30 dynamic obstacles (7 in the case of 10 dynamic obstacles). In comparison, our approach could solve 41 of the 50 environments with 30 dynamic obstacles (49 in the case of 10 dynamic obstacles) with a substantially smaller mean planning time. As the $\epsilon$ value increases, the planning problem becomes easier and performance of the baseline approach improves. Even in these easier cases, our approach has a comparable performance, if not better than that of baseline. Results across tables \ref{tab:ppad-indoor-10} and \ref{tab:ppad-indoor-30} show that our approach performs well even when the number of obstacles increases, whereas the performance of baseline degrades substantially.
 
-The results for the 50 randomly generated maze-like environments with 10 and 30 dynamic obstacles are presented in tables \ref{tab:maze-10} and \ref{tab:maze-30}. These environments are characterized by tight turns and potential dynamic obstacle collisions at the gaps in the walls. In most cases, the robot would have to swerve around the obstacle to avoid collision. Hence, the resulting path doesn't deviate significantly from the one suggested by heuristic. From the results we can observe that when the planning problem is difficult (for example, when $\epsilon = 1.1$), our approach could solve a large number of cases (47 and 46 of 50) when compared to the baseline (4 and 2 of 50). But as the $\epsilon$ value increases and the planning problem becomes easier, performance of baseline quickly catches up with our approach and in one of the case, outperforms our approach as well ($\epsilon=2$ in the 30 dynamic obstacles case). But in most runs, our approach performs better than the baseline in mean planning time and the path cost. Results across tables \ref{tab:maze-10} and \ref{tab:maze-30} show that there is not as much decrease in the performance of baseline with increase in number of obstacles, when compared to the indoor environments.
+The results for the 50 randomly generated maze-like environments with 10 and 30 dynamic obstacles are presented in tables \ref{tab:ppad-maze-10} and \ref{tab:ppad-maze-30}. These environments are characterized by tight turns and potential dynamic obstacle collisions at the gaps in the walls. In most cases, the robot would have to swerve around the obstacle to avoid collision. Hence, the resulting path doesn't deviate significantly from the one suggested by heuristic. From the results we can observe that when the planning problem is difficult (for example, when $\epsilon = 1.1$), our approach could solve a large number of cases (47 and 46 of 50) when compared to the baseline (4 and 2 of 50). But as the $\epsilon$ value increases and the planning problem becomes easier, performance of baseline quickly catches up with our approach and in one of the case, outperforms our approach as well ($\epsilon=2$ in the 30 dynamic obstacles case). But in most runs, our approach performs better than the baseline in mean planning time and the path cost. Results across tables \ref{tab:ppad-maze-10} and \ref{tab:ppad-maze-30} show that there is not as much decrease in the performance of baseline with increase in number of obstacles, when compared to the indoor environments.
 
 \section{Discussion}
 \label{sec:ppad-discussion}
