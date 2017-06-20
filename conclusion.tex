@@ -1,4 +1,50 @@
-\note{Conclude the thesis. Sections should be: \textbf{Summary} and \textbf{Future Work}.}
+\section{Summary}
+\label{sec:conclusion-summary}
+
+In this thesis, we have considered the problem of mobile robot navigation in dynamic environments. In particular, we explored two questions:
+\begin{itemize}
+\item Given an accurate model of world dynamics, how do you efficiently obtain safe, feasible and bounded sub-optimal paths for mobile robots in dynamic environments?
+\item How do you model complex dynamics such as cooperative behavior in dynamic environments, specifically human crowds?
+\end{itemize}
+
+We addressed the first question in Chapter \ref{chap:ppad}, where we proposed a heuristic based graph search planning algorithm that uses adaptive dimensionality to only consider time dimension in the search space corresponding to regions where potential dynamic obstacle collisions can occur. This reduction in search space lends the approach great speed-ups in planning time over traditional approaches such as HCA*, without sacrificing safety, dynamic feasibility and bounded sub-optimality of the solution. The proposed planning algorithm has been shown to outperform HCA* in densely populated environments with a large number of dynamic and static obstacles, without making any assumption regarding the robot's motion model.
+
+Chapter \ref{chap:oigp} addresses the second question by proposing a novel statistical model that aims to capture the complex and subtle interactions between humans in a dense crowd. Following previous approaches, we model the joint distribution of trajectories of all interacting agents without sacrificing scalability by introducing the abstraction of occupancy grids. We decompose the joint distribution by coupling predictions for individual trajectories through the occupancy grid thereby, capturing interactions that are dependent on relative distance and orientation between agents. The proposed model has shown to outperform IGP over long prediction horizons and learns complex behavior such as joint collision avoidance, slowing down and other cooperative behavior.
+
+In addition to the aforementioned novel contributions of this thesis, Chapter \ref{chap:survey} presents a brief survey of past works that have addressed similar challenges. The survey presents a good introduction for future researchers in this field to understand what has been done in the past and what challenges remain in order to make robot navigation in dynamic environments more safe and efficient.
+
+\section{Future Work}
+\label{sec:conclusion-future-work}
+
+In this section, we present a few directions for future research to extend the proposed solutions in this thesis.
+
+\subsection{Path Planning in Dynamic Environments}
+\label{sec:path-plann-dynam}
+
+The proposed planning algorithm in Chapter \ref{chap:ppad} has only been tested in simulations. As a future work, its performance can be verified on a mobile robot navigating in an environment with scripted dynamic obstacle trajectories. This can be taken further by using the planner in conjunction with a predictive model of the environment (such as the one in Chapter \ref{chap:oigp}). Every time new sensor information is received, the model can be updated and a new path can be computed by re-planning using the proposed planner.
+
+Another interesting direction would be to make the planner incremental so that search information from previous iterations can be re-used in subsequent iterations. Currently, the planner starts from scratch at the start of each iteration and does not reuse search tree from previous iterations. Extending it to be incremental lends itself naturally to this algorithm as it is iterative in nature and a large portion of the search tree remains the same across iterations. Hence, large speedups can be achieved in planning time making the algorithm more efficient and suitable for frequent re-planning.
+
+Finally, most statistical models for world dynamics result in predictions with uncertainty associated with them. An extremely useful future direction would be to extend the proposed planning algorithm to account for the uncertainty, along with the prediction, to obtain probabilistic guarantees on safety of the planned path (Similar work is done in \cite{kushleyev2009time}). We could also use this measure of uncertainty to obtain a good estimate of how frequently one should re-plan the path to ensure these probabilistic guarantees on safety.
+
+\subsection{Modeling Navigation in Dynamic Environments}
+\label{sec:model-navig-dynam}
+
+The problem of modeling complex interactions in dynamic environments, such as human crowds, remains an unsolved problem. Our proposed statistical model in Chapter \ref{chap:oigp} takes a small step towards modeling cooperative behavior exhibited in human crowds resulting in more accurate predictions. As a future work, the model can be validated and verified on a real robot placed in a dense human crowd. The task would be, given a start and goal location, the robot should be able to navigate safely and efficiently through the crowd.
+
+Currently, the model doesn't account for static obstacles which play a
+very important role in modeling navigation behavior. An interesting
+future direction would be to explore ways to account for both the
+dynamic agents and static obstacles in the environment, while
+predicting future trajectories. Another important drawback of our approach is
+the assumption of known goals in the environment. This
+restricts the generalizability of the approach to previously
+seen environments and a separate model needs to be trained
+for a new environment. A future direction would be to move away from this assumption and achieve accurate long-term predictions in completely unknown environments.
+
+Finally, our model only uses the positions and velocities as features to learn cooperative behavior from data. We could extend the model using temporal representation learning methods such as deep recurrent neural networks, to learn a latent representation for trajectories that encode high-level time varying information. This would enable the model to capture more complex and subtle interactions between agents in a dynamic environment.
+
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "thesis"

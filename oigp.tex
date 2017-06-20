@@ -1,4 +1,5 @@
-\note{This chapter should be adapted from the ICRA 2017 paper.}
+In this chapter, we will present a novel trajectory prediction algorithm for humans in dense crowds assuming we have access to their past trajectories. The presented algorithm tries to capture human-human interactions such as joint collision avoidance and cooperation. More specifically, we develop an approach that models the joint distribution over future trajectories of all interacting agents in the crowd, through a local interaction model that we train using real human trajectory data. The interaction model infers the velocity of each agent based on the spatial orientation of other agents in his vicinity. During prediction, our approach infers the goal of the agent from its past trajectory and uses the learned model to predict its future trajectory. We demonstrate the performance of our method against a state-of-the-art approach on a public dataset. Results show that our model outperforms when predicting future trajectories for longer horizons.
+
 \section{Introduction}
 \label{sec:oigp-introduction}
 
@@ -67,13 +68,12 @@ results in accurate predictions.
     pedestrians (with green arrows) make way for the oncoming agents
     (with red arrow) by going around them.}
   \label{fig:oigp-intro}
-  \vspace{-15pt}
 \end{figure}
 
 
 
 
-The summary of our contributions in this paper are as follows: We
+The summary of our contributions in this chapter are as follows: We
 develop a new algorithm for enabling robots to move naturally through
 dense crowds.
 Following the key insight that agents in crowd engage in \textit{joint
@@ -91,7 +91,7 @@ model is capable of predicting robot trajectories that are natural and
 human-like by reporting the experimental results on the ETH pedestrian
 video dataset~\cite{pellegrini09}.
 
-In the remainder of this paper, we will give an overview of relevant
+In the remainder of this chapter, we will give an overview of relevant
 existing work in section \ref{sec:oigp-related-work}. The notation and the
 problem is defined in section \ref{sec:oigp-problem-definition}. Section
 \ref{sec:oigp-approach} will describe our approach in detail and its
@@ -118,7 +118,7 @@ Hall \cite{hall63} introduces a theory on human proximity relationships which ha
 These models capture interactions to avoid collisions, but do not model human-robot cooperation. However,  models of cooperation are necessary for safe and efficient navigation in dense crowds \cite{trautman10}, because in cases where the crowd density is high, the robot believes there is no 
 %
 feasible
-path in the environment unless it accounts for cooperation from the crowd. Reciprocal Velocity Obstacles (RVO), \cite{vandenberg08}, and Velocity Obstacles (VO), \cite{fiorini98}, account for interactions between agents by computing joint collision-free velocities assuming constant velocities and shared collision avoidance behaviors. However, these approaches cannot handle stochastic behavior in pedestrian motions and do not train the model from real observed data. 
+path in the environment unless it accounts for cooperation from the crowd. Reciprocal Velocity Obstacles (RVO), \cite{van2008reciprocal}, and Velocity Obstacles (VO), \cite{fiorini98}, account for interactions between agents by computing joint collision-free velocities assuming constant velocities and shared collision avoidance behaviors. However, these approaches cannot handle stochastic behavior in pedestrian motions and do not train the model from real observed data. 
 
 Trautman et. al. \cite{trautman10} proposed \textit{Interacting Gaussian processes} (IGP) to explicitly model the human-robot cooperation. Similar to the work presented in this paper, IGP models the trajectories of all interacting agents jointly which results in a probabilistic model that can capture joint collision avoidance behavior. However, the IGP model assumes that the final destinations of all pedestrians are known, which is not the case in a realistic prediction task. 
 %
@@ -136,7 +136,7 @@ However, their approach has been tested in scripted environments with no more th
 \subsection{Trajectory prediction}
 \label{sec:oigp-traj-pred}
 
-A large body of works exist in the domain of computer vision and video surveillance that deal with predicting motion of people in videos, that are relevant to our work. \cite{kim11, joseph11} learn motion patterns using Gaussian processes and cluster human trajectories into these motion patterns. But these approaches ignore human-human interactions. IRL has also been used in the domain of activity forecasting to predict human paths in static scenes, \cite{kitani12} and more recently, \cite{alahi16} used Long Short-Term Memory networks (LSTM) to jointly reason across multiple agents to predict their trajectories in a scene. However, most of these approaches have been used in the context of prediction and have not been extended to navigation.
+A large body of works exist in the domain of computer vision and video surveillance that deal with predicting motion of people in videos, that are relevant to our work. \cite{kim11, joseph2011bayesian} learn motion patterns using Gaussian processes and cluster human trajectories into these motion patterns. But these approaches ignore human-human interactions. IRL has also been used in the domain of activity forecasting to predict human paths in static scenes, \cite{kitani2012activity} and more recently, \cite{alahi16} used Long Short-Term Memory networks (LSTM) to jointly reason across multiple agents to predict their trajectories in a scene. However, most of these approaches have been used in the context of prediction and have not been extended to navigation.
 
 \section{Problem Definition}
 \label{sec:oigp-problem-definition}
@@ -208,13 +208,12 @@ In contrast to \cite{trautman10}, who tackle a similar problem, we aim to predic
 
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.7\linewidth]{Figures/ogrid-sharp.png}
+  \includegraphics[width=\linewidth]{Figures/ogrid-sharp.png}
   \caption{Occupancy grid construction. (Left) A configuration of
     other agents (red) around the current agent (green). (right) 4x4
     occupancy grid is constructed using the number of agents in each
     grid cell}
   \label{fig:oigp-ogrid}
-  \vspace{-15pt}
 \end{figure}
 
 We exploit the observation that humans navigating in dense crowds
@@ -411,7 +410,7 @@ analyzing the environment). Hence, we have:
 That is, we evaluate the likelihood that the observation sequence
 $\zbold\supi\subt$ is true conditioned on the fact that $g\supi$ is
 the goal of agent $i$. Similar approaches have been explored in
-\cite{kitani12} and \cite{ziebart09}, for inferring destination of an
+\cite{kitani2012activity} and \cite{ziebart09}, for inferring destination of an
 agent given its previous path.
  
 %
@@ -497,9 +496,7 @@ locations.
 Future locations can be predicted using the learned model from Section
 \ref{sec:oigp-train}. For each agent $i$, we fit a separate pair of GPs
 (with the learned hyperparameters $\Theta_x^g$, $\Theta_y^g$ for goal
-$g$
-%
-) to the observed tuples $(\Obold\supi\subt, \{\xbvel\}\subti\supi)$
+$g$) to the observed tuples $(\Obold\supi\subt, \{\xbvel\}\subti\supi)$
 and $(\Obold\supi\subt, \{\ybvel\}\subti\supi)$. Using their
 corresponding GPs, each agent can predict their velocities and compute
 the location for the next time-step by adding it to the current
@@ -518,11 +515,6 @@ Algorithm \ref{alg:oigp-sampling}.
 At time $t+1$, we compute the GP predictive distribution
 \cite{rasmussen06} for each $(\xbvel)_{t+1}\supi$ and
 $(\ybvel)_{t+1}\supi$ (line \ref{alg:line:start}).
-%
-%
-%
-%
-%
 We then proceed to sample $S$ points from each of these distributions
 (line \ref{alg:line:sample}), and estimate $S$ samples for the
 location $\fbold_{t+1}\supi$ for all agents $i$ (line
@@ -650,11 +642,10 @@ resembles human-like behavior. A similar evaluation was done in
 
 \begin{figure}[t!]
   \centering
-  \includegraphics[scale=0.4]{Figures/snap-label.png}
+  \includegraphics[width=0.7\linewidth]{Figures/snap-label.png}
   \caption{Example snapshot of the dataset with goals indicated by red
     dots}
   \label{fig:oigp-snapshot}
-  \vspace{-15pt}
 \end{figure}
 
 We compare our approach against IGP \cite{trautman10}, as it deals
@@ -707,7 +698,7 @@ We construct occupancy grids around each agent of size $4 \times 4$ (i.e. $M=4$)
 
 \begin{figure}[t!]
   \centering
-  \includegraphics[scale=0.35]{Figures/igp2-crop.png}
+  \includegraphics[width=0.7\linewidth]{Figures/igp2-crop.png}
   \caption{Example prediction by our model. For each pedestrian, we predict his future locations (which are plotted) for the next 5 time-steps. The bottom set of pedestrians are progressing towards a goal at the top centre of the image, but they go around the other set of pedestrians making way for them cooperatively}
   \label{fig:oigp-bestcase}
   %
@@ -744,10 +735,9 @@ To verify this observation, we have examined the values of the learned hyperpara
 
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.7\linewidth]{Figures/sample-ogrid.png}
+  \includegraphics[width=\linewidth]{Figures/sample-ogrid.png}
   \caption{Velocities predicted by our trained model for example occupancy grids. In each case, the goal of the pedestrian is right above in the Y-direction. Predicted mean y-velocity is shown in blue and predicted mean x-velocity is shown in red.}
   \label{fig:oigp-learnedmodel}
-  \vspace{-15pt}
 \end{figure}
 
 \section{Discussion}
@@ -805,10 +795,10 @@ an interaction-aware modeling approach is significantly better than a
 reactive approach.
 
 
-\section{Conclusion and Future Work}
+\section{Summary}
 \label{sec:oigp-conclusion}
 
-In this work, we present a new approach to modeling cooperative
+In this chapter, we presented a new approach to modeling cooperative
 behavior among humans in dense crowds. While most existing approaches
 use hand-crafted models to capture interactions among humans in the
 crowd, we take a data-driven approach and learn an interaction model
@@ -824,27 +814,23 @@ real world pedestrian dataset. Our results show that the model
 captures important aspects of human crowd behavior such as cooperative
 navigation and collision avoidance.
 
-Currently, the model doesn't account for static obstacles which play a
-very important role in modeling navigation behavior. An interesting
-future direction would be to explore ways to account for both the
-dynamic pedestrians and static obstacles in the environment, while
-predicting future trajectories. Another important drawback of our
+ Another important drawback of our
 approach is the assumption of known goals in the environment. This
 restricts the generalizability of the approach to previously seen
 environments and a separate model needs to be trained for a new
 environment.
 
 
-As a part of future work, we plan to validate and verify our approach
-on a real robot placed in a dense human crowd. The task would be,
-given a start and goal location, the robot should be able to navigate
-safely and efficiently through the crowd. In addition to validating
-our approach, we intend to tackle the drawbacks of the approach as
-stated before. We are also looking to extend the model by coming up
-with latent representations of trajectories that encode time-varying
-information such as pedestrian's intention, planned future path and
-velocities, that can be used instead of an occupancy grid in our
-approach.
+%As a part of future work, we plan to validate and verify our approach
+%on a real robot placed in a dense human crowd. The task would be,
+%given a start and goal location, the robot should be able to navigate
+%safely and efficiently through the crowd. In addition to validating
+%our approach, we intend to tackle the drawbacks of the approach as
+%stated before. We are also looking to extend the model by coming up
+%with latent representations of trajectories that encode time-varying
+%information such as pedestrian's intention, planned future path and
+%velocities, that can be used instead of an occupancy grid in our
+%approach.
 
 
 %%% Local Variables:

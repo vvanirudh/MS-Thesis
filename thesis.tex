@@ -23,6 +23,7 @@
 \usepackage[normalem]{ulem}
 \usepackage{tgpagella}
 \usepackage{hyperref}
+\usepackage{appendix}
 \newcommand*{\QEDB}{\hfill\ensuremath{\square}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -100,6 +101,8 @@
 \tableofcontents
 \clearpage
 
+\NewPage
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Include in final thesis
 %\clearpage \listoffigures
@@ -136,15 +139,28 @@
 
 \clearpage
 
-\chapter{Attention in Human Crowds}
-\label{chap:attn}
-\input{attn.tex}
+%\chapter{Attention in Human Crowds}
+%\label{chap:attn}
+%\input{attn.tex}
 
-\clearpage
+%\clearpage
 
 \chapter{Conclusion}
 \label{chap:conclusion}
 \input{conclusion.tex}
+
+
+\clearpage
+
+\appendix
+\chapter{Code and Datasets}
+\label{chap:code-and-datasets}
+
+\begin{itemize}
+\item Code for the planning algorithm proposed in Chapter \ref{chap:ppad}, with dataset : \url{https://github.com/vvanirudh/sbpl_dynamic_adaptive_planner}
+\item Code for the statistical model proposed in Chapter \ref{chap:oigp} : \url{https://github.com/vvanirudh/occupancy-IGP}
+\item ETH Dataset used for evaluation in Chapter \ref{chap:oigp} can be found here : \url{http://www.vision.ee.ethz.ch/en/datasets/}
+\end{itemize}
 
 %Include references using bst and bib files.
 \bibliographystyle{finitplain}

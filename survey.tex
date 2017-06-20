@@ -24,7 +24,7 @@ These works tackle the more difficult objective of not only safe robot navigatio
 \subsubsection{Trajectory prediction}
 \label{sec:survey-traj-pred}
 
-The set of works in this class do not necessarily involve robot navigation, but rather tackle the problem of accurately modeling human trajectories in crowds. As shown in section \note{sec:intro-planning-as-inference}, planning the path for the robot reduces to inference in this model, thereby obtaining a path for the robot that is ``human-like'' or socially-compliant. Most of the works in this category are from the domain of video surveillance tracking and computer vision.
+The set of works in this class do not necessarily involve robot navigation, but rather tackle the problem of accurately modeling human trajectories in crowds. As shown in section \ref{sec:intro-plann-as-infer}, planning the path for the robot reduces to inference in this model, thereby obtaining a path for the robot that is ``human-like'' or socially-compliant. Most of the works in this category are from the domain of video surveillance tracking and computer vision.
 
 
 
@@ -64,9 +64,9 @@ In each of the categories in the above taxonomy, there are several related works
     \hline
      & \textbf{IH} & \textbf{IT} & \textbf{JH} & \textbf{JT}\\
     \hline
-    \textbf{Safe robot navigation} & \cite{hoeller2007accompanying} & \cite{aoude2013probabilistically}& \cite{trautman2015robot} & \cite{kim2014brvo} \\
+    \textbf{Safe robot navigation} & \cite{hoeller2007accompanying} & \cite{aoude2013probabilistically}& \cite{trautman15} & \cite{kim2014brvo} \\
     \hline
-    \textbf{Social robot navigation} & \cite{kirby2009companion} & \cite{kim2016socially} & \cite{shiomi2014towards} & \cite{kretzschmar2016socially} \\
+    \textbf{Social robot navigation} & \cite{kirby2009companion} & \cite{kim2016socially} & \cite{shiomi2014towards} & \cite{Kretzschmar16} \\
     \hline
     \textbf{Trajectory prediction} & \begin{center}{\textbf{-}}\end{center} & \cite{joseph2011bayesian, kitani2012activity} & \cite{luber2010people} & \cite{pellegrini2010improving, alahi16} \\
     \hline
@@ -88,7 +88,7 @@ On the other hand, \cite{aoude2013probabilistically} uses similar independent hu
 
 Learning motion patterns from data enables \cite{aoude2013probabilistically} to result in predictions that capture several navigation behaviors. By combining GPs and RRTs, it has a run-time that is suitable for real-time operation. Chance-constrained RRT, used in planning the path of the robot, guarantees probabilistically safe trajectories for the robot in the presence of humans. But the motion patterns modeled account for each individual human individually and do not capture human-human interactions. In dense crowds, where such interactions play a major role such a model would result in inaccurate predictions.
 
-More recently, there have been several works which move away from the independence assumption and model the future trajectories of all interacting agents as a joint distribution. As a result, these works can capture human-human interactions within the crowd. \cite{trautman2015robot} introduced \textit{Interacting Gaussian Processes} (IGP), which uses GPs to model individual trajectories of the pedestrians (and the robot) and couples their predictions using a handcrafted interaction potential term that aims to capture joint behaviors, such as cooperative collision avoidance. The robot's path is chosen as the MAP assignment to the modeled joint distribution (similar to \note{sec:intro-planning-as-inference}).
+More recently, there have been several works which move away from the independence assumption and model the future trajectories of all interacting agents as a joint distribution. As a result, these works can capture human-human interactions within the crowd. \cite{trautman15} introduced \textit{Interacting Gaussian Processes} (IGP), which uses GPs to model individual trajectories of the pedestrians (and the robot) and couples their predictions using a handcrafted interaction potential term that aims to capture joint behaviors, such as cooperative collision avoidance. The robot's path is chosen as the MAP assignment to the modeled joint distribution (similar to Section \ref{sec:intro-plann-as-infer}).
 
 The handcrafted interaction potential term explicitly assigns low probability mass to predictions that result in human-human and human-robot collisions, thus capturing joint collision avoidance. One important contribution of this work is that since the robot is part of the joint model, it also accounts for human-robot cooperation which was lacking in previous works. A major drawback of such an approach is the hand-tuned potential term that doesn't generalize across different environments and crowd settings.
 
@@ -112,7 +112,7 @@ As argued before, to capture these interactions we need to model the joint distr
 
 In sparse crowds, approaches such as \cite{shiomi2014towards} that employ the social forces model have been shown to result in socially compliant paths. But in dense crowds, social force models fail as they can only capture simple interactions like attraction or repulsion and not complex crowd behavior such as cooperation. This restricts the applicability of such approaches in dense crowds.
 
-\cite{kretzschmar2016socially} learns parameters of a joint distribution model over all interacting agents using Maximum Entropy IRL, \cite{Ziebart2008MaximumEI}, from human demonstrations. The features used include acceleration, velocity, clearance, collision-avoidance, passing left vs right, group behavior etc. During prediction, they explicitly account for interactions between humans, and predict the future paths of both the humans and the robot jointly. Since the cost function is learned from real crowd data and the future paths are jointly predicted, this approach can capture interactions that are commonly seen in dense crowds resulting in socially compliant path for the robot. Interestingly, the model also learns cooperative behavior between the humans and the robot. The only drawback is that the dimensionality of the feature vector scales with the number of agents in the crowd making the approach scale poorly with the size of the crowd.
+\cite{Kretzschmar16} learns parameters of a joint distribution model over all interacting agents using Maximum Entropy IRL, \cite{Ziebart2008MaximumEI}, from human demonstrations. The features used include acceleration, velocity, clearance, collision-avoidance, passing left vs right, group behavior etc. During prediction, they explicitly account for interactions between humans, and predict the future paths of both the humans and the robot jointly. Since the cost function is learned from real crowd data and the future paths are jointly predicted, this approach can capture interactions that are commonly seen in dense crowds resulting in socially compliant path for the robot. Interestingly, the model also learns cooperative behavior between the humans and the robot. The only drawback is that the dimensionality of the feature vector scales with the number of agents in the crowd making the approach scale poorly with the size of the crowd.
 
 \section{Trajectory Prediction}
 \label{sec:survey-traj-pred-2}
