@@ -8,3 +8,5 @@ Figures/extra
 _*
 *.out
 *.toc
+*.lof
+*.lot

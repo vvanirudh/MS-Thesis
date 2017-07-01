@@ -15,7 +15,7 @@
 \usepackage{marginnote}
 \usepackage[left=1.5in,right=1.5in,top=1.5in,bottom=1.5in]{geometry}
 \usepackage[usenames,dvipsnames]{xcolor}
-\usepackage{graphicx,amsmath,amssymb,multirow,booktabs,color,verbatim,draftwatermark,cite,url,placeins}
+\usepackage{graphicx,amsmath,amssymb,multirow,booktabs,color,verbatim,cite,placeins}
 \usepackage{algorithm, algpseudocode}
 \usepackage[font=scriptsize]{subcaption}
 \usepackage[font=scriptsize]{subfig}
@@ -23,22 +23,23 @@
 \usepackage[normalem]{ulem}
 \usepackage{tgpagella}
 \usepackage{hyperref}
+\usepackage{url}
 \usepackage{appendix}
 \newcommand*{\QEDB}{\hfill\ensuremath{\square}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %DF: This needs to be removed to get 
 %rid of all watermarks
-\usepackage{draftwatermark}
-\SetWatermarkText{DRAFT}
-\SetWatermarkScale{0.5}
-\SetWatermarkLightness{0.90}
+%\usepackage{draftwatermark}
+%\SetWatermarkText{DRAFT}
+%\SetWatermarkScale{0.5}
+%\SetWatermarkLightness{0.90}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %DF: Nuke all the notes by using 
 %the second note definition below
-\newcommand{\note}[1]{\textcolor{red}{#1}}
-% \newcommand{\note}[1]{}
+%\newcommand{\note}[1]{\textcolor{red}{#1}}
+\newcommand{\note}[1]{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Hyperlink setup
@@ -73,14 +74,17 @@
 % Adding notations
 \input{notation.tex}
 
-\title{2 Legit 2 Quit}
-\author{JJ Gibson}
-
-
 %title page
 \input{titlepage.tex}
 \clearpage
 
+\NewPage
+
+\vspace*{4cm}
+\begin{center}
+  \textit{For my brother, who put the fear of mediocrity in me.} \\
+  \textit{For my mom, for all her sacrifices to help me pursue my dreams.}
+\end{center}
 
 %start the forematter 
 \pagenumbering{Roman}
@@ -105,10 +109,11 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Include in final thesis
-%\clearpage \listoffigures
-%\clearpage \listoftables
-%\clearpage
+\clearpage \listoffigures
+\clearpage \listoftables
+\clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewPage
 
 %start the actual document
 \pagenumbering{arabic}
@@ -153,12 +158,34 @@
 \clearpage
 
 \appendix
-\chapter{Code and Datasets}
+\chapter{Code and Publications}
 \label{chap:code-and-datasets}
 
+\section{Code}
+\label{sec:code}
 \begin{itemize}
 \item Code for the planning algorithm proposed in Chapter \ref{chap:ppad}, with dataset : \url{https://github.com/vvanirudh/sbpl_dynamic_adaptive_planner}
 \item Code for the statistical model proposed in Chapter \ref{chap:oigp} : \url{https://github.com/vvanirudh/occupancy-IGP}
+\end{itemize}
+
+\section{Publications}
+\label{sec:publications}
+
+\begin{itemize}
+\item The work presented in Chapter \ref{chap:ppad} was presented at SoCS 2016.
+  \begin{quote}
+    Vemula, Anirudh, Katharina Muelling, and Jean Oh. ``Path Planning in Dynamic Environments with Adaptive Dimensionality.'' In Ninth Annual Symposium on Combinatorial Search. 2016.
+  \end{quote}
+\item The work presented in Chapter \ref{chap:oigp} was presented at ICRA 2017.
+  \begin{quote}
+    Vemula, Anirudh, Katharina Muelling, and Jean Oh. ``Modeling Cooperative Navigation in Dense Human Crowds.'' In International Conference on Robotics and Automation. 2017.
+  \end{quote}  
+\end{itemize}
+
+\chapter{Public Datasets}
+\label{cha:public-datasets}
+
+\begin{itemize}
 \item ETH Dataset used for evaluation in Chapter \ref{chap:oigp} can be found here : \url{http://www.vision.ee.ethz.ch/en/datasets/}
 \end{itemize}
 
